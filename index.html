@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Art Duel – Birthday Edition</title>
+  <title>Art Quiz – Birthday Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -19,12 +19,15 @@
       --text: #2a1f17;
       --text-mid: #6b4c38;
       --text-soft: #a08070;
+      --green: #4d9970;
+      --green-bg: #eaf5ee;
+      --red: #c05050;
+      --red-bg: #faeaea;
       --serif: 'Cormorant Garamond', Georgia, serif;
       --sans: 'Jost', system-ui, sans-serif;
     }
 
     html, body { height: 100%; }
-
     body {
       font-family: var(--sans);
       background: var(--cream);
@@ -34,518 +37,287 @@
     }
 
     /* ===== ANIMATIONS ===== */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes riseUp {
-      from { opacity: 0; transform: translateY(34px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes riseUp  { from { opacity: 0; transform: translateY(34px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes petalDrift {
       0%   { transform: translateY(-120px) rotate(0deg) translateX(0px); opacity: 0; }
       6%   { opacity: 0.85; }
       88%  { opacity: 0.55; }
       100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
     }
-    @keyframes popIn {
-      0%   { transform: scale(0); opacity: 0; }
-      60%  { transform: scale(1.2); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes popIn   { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes fadeUp  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse   { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
 
     /* ===== BIRTHDAY SCREEN ===== */
     #birthday-screen {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: linear-gradient(150deg, #fdf9f3 0%, var(--champagne) 52%, #f5e0cc 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; overflow: hidden;
       animation: fadeIn 0.6s ease;
     }
-
     .petal {
       position: absolute;
       border-radius: 50% 0 50% 0;
       pointer-events: none;
       animation: petalDrift linear infinite;
     }
-
     .birthday-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 2.5rem 2rem;
+      position: relative; z-index: 1;
+      text-align: center; padding: 2.5rem 2rem;
       animation: riseUp 0.65s ease 0.2s both;
-      max-width: 560px;
-      width: 100%;
+      max-width: 560px; width: 100%;
     }
-
-    .birthday-emoji {
-      font-size: 2.8rem;
-      display: block;
-      margin-bottom: 1.8rem;
-      line-height: 1;
-    }
-
+    .birthday-emoji { font-size: 2.8rem; display: block; margin-bottom: 1.8rem; line-height: 1; }
     .pro-tebe {
-      font-family: var(--serif);
-      font-size: 1rem;
-      font-weight: 300;
-      color: var(--text-soft);
-      letter-spacing: 0.28em;
-      text-transform: lowercase;
-      margin-bottom: 0.4rem;
+      font-family: var(--serif); font-size: 1rem; font-weight: 300;
+      color: var(--text-soft); letter-spacing: 0.28em; text-transform: lowercase; margin-bottom: 0.4rem;
     }
-
     .vsechno-nejlepsi {
-      font-family: var(--serif);
-      font-size: clamp(3rem, 9vw, 5.6rem);
-      font-weight: 400;
-      font-style: italic;
-      color: var(--text);
-      line-height: 1.05;
-      margin-bottom: 0.5rem;
+      font-family: var(--serif); font-size: clamp(3rem, 9vw, 5.6rem);
+      font-weight: 400; font-style: italic; color: var(--text); line-height: 1.05; margin-bottom: 0.5rem;
     }
-
     .narozeninam {
-      font-family: var(--serif);
-      font-size: clamp(1.4rem, 3.5vw, 2.3rem);
-      font-weight: 500;
-      color: var(--text-mid);
-      letter-spacing: 0.04em;
-      margin-bottom: 2.2rem;
+      font-family: var(--serif); font-size: clamp(1.4rem, 3.5vw, 2.3rem);
+      font-weight: 500; color: var(--text-mid); letter-spacing: 0.04em; margin-bottom: 2.2rem;
     }
-
     .birthday-separator {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      width: 180px;
-      margin: 0 auto 1.8rem;
+      display: flex; align-items: center; gap: 0.8rem;
+      width: 180px; margin: 0 auto 1.8rem;
     }
-    .birthday-separator::before,
-    .birthday-separator::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--gold);
-      opacity: 0.55;
+    .birthday-separator::before, .birthday-separator::after {
+      content: ''; flex: 1; height: 1px; background: var(--gold); opacity: 0.55;
     }
-    .sep-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--gold);
-      flex-shrink: 0;
-    }
-
+    .sep-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
     .birthday-subtitle {
-      font-family: var(--serif);
-      font-size: 1.1rem;
-      font-weight: 300;
-      font-style: italic;
-      color: var(--text-mid);
-      line-height: 1.8;
-      margin-bottom: 2.8rem;
+      font-family: var(--serif); font-size: 1.1rem; font-weight: 300; font-style: italic;
+      color: var(--text-mid); line-height: 1.8; margin-bottom: 2.8rem;
     }
-
     .btn-start {
-      font-family: var(--sans);
-      font-size: 0.85rem;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: white;
+      font-family: var(--sans); font-size: 0.85rem; font-weight: 400;
+      letter-spacing: 0.18em; text-transform: uppercase; color: white;
       background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-      border: none;
-      padding: 0.95rem 3rem;
-      border-radius: 2px;
-      cursor: pointer;
-      box-shadow: 0 4px 26px rgba(200, 169, 110, 0.48);
+      border: none; padding: 0.95rem 3rem; border-radius: 2px; cursor: pointer;
+      box-shadow: 0 4px 26px rgba(200,169,110,0.48);
       transition: transform 0.22s, box-shadow 0.22s;
     }
-    .btn-start:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 36px rgba(200, 169, 110, 0.58);
-    }
+    .btn-start:hover { transform: translateY(-3px); box-shadow: 0 8px 36px rgba(200,169,110,0.58); }
     .btn-start:active { transform: translateY(-1px); }
 
     /* ===== APP ===== */
-    #app {
-      display: none;
-      min-height: 100vh;
-      flex-direction: column;
-    }
+    #app { display: none; min-height: 100vh; flex-direction: column; }
     #app.visible { display: flex; }
 
     /* ===== NAV ===== */
     #main-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(250, 246, 240, 0.96);
-      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,246,240,0.96); backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--champagne);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 0.8rem 1.8rem;
     }
-
-    .nav-brand {
-      font-family: var(--serif);
-      font-size: 1.45rem;
-      font-weight: 400;
-      font-style: italic;
-      color: var(--text);
-      letter-spacing: 0.03em;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-    }
-
-    #round-badge {
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      font-weight: 300;
-      color: var(--text-soft);
-      letter-spacing: 0.06em;
-    }
-
-    .btn-nav-results {
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: var(--gold-dark);
-      background: none;
-      border: 1px solid var(--gold);
-      padding: 0.4rem 1.1rem;
-      border-radius: 2px;
-      cursor: pointer;
-      letter-spacing: 0.06em;
-      transition: background 0.2s, color 0.2s;
-    }
-    .btn-nav-results:hover {
-      background: var(--gold);
-      color: white;
-    }
+    .nav-brand { font-family: var(--serif); font-size: 1.45rem; font-weight: 400; font-style: italic; color: var(--text); }
+    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+    #round-badge { font-family: var(--sans); font-size: 0.82rem; font-weight: 300; color: var(--text-soft); letter-spacing: 0.06em; }
+    #score-badge { font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: var(--gold-dark); letter-spacing: 0.04em; }
 
     /* ===== PROGRESS BAR ===== */
-    #progress-bar {
-      height: 3px;
-      background: var(--champagne);
-    }
+    #progress-bar { height: 3px; background: var(--champagne); }
     #progress-fill {
-      height: 100%;
-      width: 0%;
+      height: 100%; width: 0%;
       background: linear-gradient(to right, var(--gold), var(--gold-dark));
-      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
     }
 
     /* ===== MAIN CONTENT ===== */
     #main-content { flex: 1; }
 
-    /* ===== VOTING SCREEN ===== */
-    #voting-screen {
-      padding: 2.5rem 1.5rem 3rem;
-      max-width: 1100px;
-      margin: 0 auto;
+    /* ===== QUIZ SCREEN ===== */
+    #quiz-screen {
+      max-width: 800px; margin: 0 auto;
+      padding: 0 0 3rem;
+      display: flex; flex-direction: column;
     }
 
-    #voting-screen h2 {
-      font-family: var(--serif);
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      font-weight: 400;
-      font-style: italic;
-      color: var(--text);
-      text-align: center;
-      margin-bottom: 2.2rem;
-    }
-
-    #paintings-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.8rem;
-      margin-bottom: 2.5rem;
-    }
-
-    /* ===== PAINTING CARD ===== */
-    .painting-card {
-      cursor: pointer;
-      border: 2px solid transparent;
-      border-radius: 4px;
-      overflow: hidden;
-      background: white;
-      box-shadow: 0 2px 20px rgba(42, 31, 23, 0.08);
-      transition:
-        transform 0.28s ease,
-        border-color 0.28s ease,
-        box-shadow 0.28s ease,
-        opacity 0.35s ease;
-    }
-    .painting-card:hover:not(.voted-winner):not(.voted-loser) {
-      transform: translateY(-6px) scale(1.015);
-      border-color: var(--gold);
-      box-shadow: 0 12px 40px rgba(200, 169, 110, 0.3);
-    }
-    .painting-card.voted-winner {
-      border-color: var(--gold);
-      transform: scale(1.02);
-      box-shadow: 0 12px 44px rgba(200, 169, 110, 0.5);
-      cursor: default;
-    }
-    .painting-card.voted-loser {
-      opacity: 0.4;
-      transform: scale(0.97);
-      cursor: default;
-    }
-
-    .painting-img-wrap {
-      position: relative;
+    /* Painting */
+    #painting-wrap {
       width: 100%;
-      padding-bottom: 72%;
+      height: clamp(220px, 42vh, 440px);
+      overflow: hidden;
       background: var(--champagne);
-      overflow: hidden;
+      position: relative;
     }
-    .painting-img-wrap img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    #painting-img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: opacity 0.3s ease;
     }
 
-    .winner-badge {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-      color: white;
-      font-family: var(--sans);
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      padding: 0.32rem 0.72rem;
-      border-radius: 2px;
-      animation: popIn 0.32s ease both;
-      z-index: 5;
+    /* Question */
+    #question-area { padding: 1.5rem 1.5rem 0; }
+    #question-text {
+      font-family: var(--serif); font-size: clamp(1.2rem, 3vw, 1.65rem);
+      font-weight: 400; font-style: italic; color: var(--text);
+      text-align: center; margin-bottom: 1.2rem; line-height: 1.4;
     }
 
-    /* ===== METADATA ===== */
-    .painting-meta {
-      padding: 1.1rem 1.3rem;
-      display: none;
+    /* Options */
+    #options-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
     }
-    .painting-meta.visible {
-      display: block;
-      animation: fadeUp 0.45s ease 0.1s both;
+    .opt-btn {
+      font-family: var(--serif); font-size: 1rem; font-weight: 400;
+      padding: 0.85rem 1rem; text-align: center; line-height: 1.3;
+      background: white; border: 2px solid var(--champagne);
+      border-radius: 4px; color: var(--text); cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      min-height: 56px;
     }
-    .meta-title {
-      font-family: var(--serif);
-      font-size: 1.1rem;
-      font-weight: 500;
-      font-style: italic;
-      color: var(--text);
-      margin-bottom: 0.25rem;
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--gold);
+      background: #fdf8f2;
+      transform: translateY(-2px);
     }
-    .meta-artist {
-      font-family: var(--sans);
-      font-size: 0.83rem;
-      color: var(--text-mid);
-      margin-bottom: 0.12rem;
+    .opt-btn:disabled { cursor: default; }
+    .opt-btn.correct {
+      background: var(--green-bg); border-color: var(--green);
+      color: #1e5c3a; font-weight: 500;
+      animation: pulse 0.4s ease;
     }
-    .meta-details {
-      font-family: var(--sans);
-      font-size: 0.77rem;
-      color: var(--text-soft);
-      font-weight: 300;
+    .opt-btn.wrong {
+      background: var(--red-bg); border-color: var(--red); color: #7a2020;
     }
+    .opt-btn.dimmed { opacity: 0.35; }
 
-    /* ===== CONTINUE BUTTON ===== */
-    #continue-btn-wrap { text-align: center; }
+    /* Feedback */
+    #feedback-area {
+      display: none; margin: 1.2rem 1.5rem 0;
+      border-radius: 6px; overflow: hidden;
+      animation: fadeUp 0.35s ease both;
+    }
+    #feedback-area.visible { display: block; }
 
+    .feedback-banner {
+      padding: 0.75rem 1.2rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      font-family: var(--sans); font-size: 0.9rem; font-weight: 500;
+    }
+    .feedback-banner.correct-banner { background: var(--green-bg); color: #1e5c3a; }
+    .feedback-banner.wrong-banner   { background: var(--red-bg);   color: #7a2020; }
+    .feedback-icon { font-size: 1.2rem; }
+
+    .painting-reveal {
+      padding: 1rem 1.2rem;
+      background: white; border: 1px solid var(--champagne);
+      border-top: none;
+    }
+    .reveal-title {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 500;
+      font-style: italic; color: var(--text); margin-bottom: 0.3rem;
+    }
+    .reveal-artist { font-family: var(--sans); font-size: 0.85rem; color: var(--text-mid); margin-bottom: 0.12rem; }
+    .reveal-details { font-family: var(--sans); font-size: 0.78rem; color: var(--text-soft); font-weight: 300; }
+
+    /* Continue button */
+    #continue-btn-wrap { text-align: center; padding: 1.2rem 1.5rem 0; }
     #continue-btn {
       display: none;
-      font-family: var(--sans);
-      font-size: 0.85rem;
-      font-weight: 400;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: white;
+      font-family: var(--sans); font-size: 0.85rem; font-weight: 400;
+      letter-spacing: 0.15em; text-transform: uppercase; color: white;
       background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-      border: none;
-      padding: 0.9rem 2.8rem;
-      border-radius: 2px;
-      cursor: pointer;
-      box-shadow: 0 4px 24px rgba(200, 169, 110, 0.42);
+      border: none; padding: 0.9rem 2.8rem; border-radius: 2px; cursor: pointer;
+      box-shadow: 0 4px 24px rgba(200,169,110,0.42);
       transition: transform 0.22s, box-shadow 0.22s;
     }
     #continue-btn.visible {
       display: inline-block;
       animation: fadeUp 0.4s ease both;
     }
-    #continue-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(200, 169, 110, 0.52);
-    }
+    #continue-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,169,110,0.52); }
 
-    /* ===== RANKING SCREEN ===== */
-    #ranking-screen {
-      display: none;
-      padding: 2.5rem 1.5rem 3rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    #ranking-screen.visible { display: block; }
+    /* ===== RESULT SCREEN ===== */
+    #result-screen { display: none; padding: 2.5rem 1.5rem 3rem; max-width: 800px; margin: 0 auto; }
+    #result-screen.visible { display: block; animation: fadeUp 0.5s ease both; }
 
-    .ranking-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    .ranking-header h2 {
-      font-family: var(--serif);
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 400;
-      font-style: italic;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-    .ranking-header p {
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      font-weight: 300;
-      color: var(--text-soft);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
+    .result-top { text-align: center; margin-bottom: 2.5rem; }
 
-    #ranking-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .ranking-card {
+    .score-ring {
+      width: 130px; height: 130px; border-radius: 50%;
+      border: 5px solid var(--gold);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
       background: white;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 2px 16px rgba(42, 31, 23, 0.08);
-      position: relative;
-      transition: transform 0.22s;
+      box-shadow: 0 4px 24px rgba(200,169,110,0.2);
     }
-    .ranking-card:hover { transform: translateY(-4px); }
-
-    .rank-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--sans);
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: white;
-      z-index: 5;
+    .score-num {
+      font-family: var(--serif); font-size: 3.2rem; font-weight: 300;
+      color: var(--text); line-height: 1;
     }
-    .rank-1 { background: linear-gradient(135deg, #e8c848, #b89028); }
-    .rank-2 { background: linear-gradient(135deg, #b8c4cc, #8898a8); }
-    .rank-3 { background: linear-gradient(135deg, #d08060, #a85838); }
-    .rank-n { background: rgba(42, 31, 23, 0.52); font-size: 0.7rem; }
-
-    .ranking-img-wrap {
-      width: 100%;
-      padding-bottom: 65%;
-      position: relative;
-      overflow: hidden;
-      background: var(--champagne);
+    .score-denom {
+      font-family: var(--sans); font-size: 0.8rem; font-weight: 300;
+      color: var(--text-soft); letter-spacing: 0.1em;
     }
-    .ranking-img-wrap img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .result-msg {
+      font-family: var(--serif); font-size: 1.4rem; font-style: italic;
+      color: var(--text-mid); margin-bottom: 0.4rem;
+    }
+    .result-highscore {
+      font-family: var(--sans); font-size: 0.78rem; font-weight: 300;
+      color: var(--text-soft); letter-spacing: 0.08em;
     }
 
-    .ranking-info {
-      padding: 1rem 1.15rem 1.2rem;
+    /* Result list */
+    #result-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2rem; }
+
+    .result-item {
+      display: flex; align-items: flex-start; gap: 0.9rem;
+      background: white; border-radius: 4px;
+      padding: 0.75rem;
+      border-left: 4px solid var(--champagne);
     }
-    .ranking-title {
-      font-family: var(--serif);
-      font-size: 1rem;
-      font-weight: 500;
-      font-style: italic;
-      color: var(--text);
-      margin-bottom: 0.22rem;
-      line-height: 1.3;
+    .result-item.ri-correct { border-left-color: var(--green); }
+    .result-item.ri-wrong   { border-left-color: var(--red); }
+
+    .result-thumb {
+      width: 64px; height: 50px; object-fit: cover;
+      border-radius: 2px; flex-shrink: 0;
     }
-    .ranking-artist {
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      color: var(--text-mid);
-      margin-bottom: 0.12rem;
+    .result-icon {
+      font-size: 1rem; flex-shrink: 0;
+      margin-top: 0.1rem; width: 20px; text-align: center;
     }
-    .ranking-details {
-      font-family: var(--sans);
-      font-size: 0.73rem;
-      color: var(--text-soft);
-      font-weight: 300;
-      margin-bottom: 0.5rem;
+    .result-text { flex: 1; }
+    .result-painting-name {
+      font-family: var(--serif); font-size: 0.95rem; font-style: italic;
+      font-weight: 500; color: var(--text); margin-bottom: 0.15rem;
     }
-    .ranking-wins {
-      font-family: var(--sans);
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--gold-dark);
+    .result-q { font-family: var(--sans); font-size: 0.73rem; color: var(--text-soft); font-weight: 300; }
+    .result-answer {
+      font-family: var(--sans); font-size: 0.75rem; color: var(--text-mid); font-weight: 400;
     }
 
-    .btn-back-wrap { text-align: center; }
-    .btn-back {
-      font-family: var(--sans);
-      font-size: 0.82rem;
-      font-weight: 400;
-      letter-spacing: 0.1em;
-      color: var(--gold-dark);
-      background: none;
-      border: 1px solid var(--gold);
-      padding: 0.75rem 2rem;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
+    .btn-again {
+      display: block; margin: 0 auto;
+      font-family: var(--sans); font-size: 0.85rem; font-weight: 400;
+      letter-spacing: 0.15em; text-transform: uppercase; color: white;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      border: none; padding: 0.9rem 2.8rem; border-radius: 2px; cursor: pointer;
+      box-shadow: 0 4px 24px rgba(200,169,110,0.42);
+      transition: transform 0.22s, box-shadow 0.22s;
     }
-    .btn-back:hover {
-      background: var(--gold);
-      color: white;
-    }
+    .btn-again:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,169,110,0.52); }
 
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 600px) {
-      #paintings-grid {
-        grid-template-columns: 1fr;
-        gap: 1.2rem;
-      }
+    @media (max-width: 560px) {
+      #options-grid { grid-template-columns: 1fr; }
       #main-nav { padding: 0.75rem 1rem; }
-      #voting-screen, #ranking-screen { padding: 1.5rem 1rem 2.5rem; }
       .nav-brand { font-size: 1.2rem; }
-      #round-badge { display: none; }
+      #score-badge { display: none; }
+      #question-area { padding: 1.2rem 1rem 0; }
+      #feedback-area { margin: 1rem 1rem 0; }
+      #continue-btn-wrap { padding: 1rem 1rem 0; }
     }
   </style>
 </head>
@@ -559,48 +331,62 @@
     <h1 class="vsechno-nejlepsi">Všechno nejlepší</h1>
     <p class="narozeninam">k narozeninám mamko</p>
     <div class="birthday-separator"><div class="sep-dot"></div></div>
-    <p class="birthday-subtitle">Vybrala jsem pro tebe malou výstavu slavných obrazů… Který se ti líbí více?</p>
-    <button class="btn-start" id="start-btn">Začít prohlídku</button>
+    <p class="birthday-subtitle">Vybrala jsem pro tebe malou výstavu slavných obrazů… Poznáš je?</p>
+    <button class="btn-start" id="start-btn">Začít kvíz</button>
   </div>
 </div>
 
 <!-- ===== APP ===== -->
 <div id="app">
   <nav id="main-nav">
-    <span class="nav-brand">Art Duel</span>
+    <span class="nav-brand">Art Quiz</span>
     <div class="nav-right">
-      <span id="round-badge">Kolo 1 / 10</span>
-      <button class="btn-nav-results" id="nav-results-btn">Výsledky →</button>
+      <span id="score-badge">Skóre: 0 / 0</span>
+      <span id="round-badge">Otázka 1 / 10</span>
     </div>
   </nav>
   <div id="progress-bar"><div id="progress-fill"></div></div>
 
   <div id="main-content">
-    <!-- Voting -->
-    <div id="voting-screen">
-      <h2>Který obraz se vám líbí více?</h2>
-      <div id="paintings-grid"></div>
+    <!-- Quiz -->
+    <div id="quiz-screen">
+      <div id="painting-wrap">
+        <img id="painting-img" alt="Obraz">
+      </div>
+      <div id="question-area">
+        <p id="question-text"></p>
+        <div id="options-grid"></div>
+      </div>
+      <div id="feedback-area">
+        <div class="feedback-banner" id="feedback-banner">
+          <span class="feedback-icon" id="feedback-icon"></span>
+          <span id="feedback-text"></span>
+        </div>
+        <div class="painting-reveal" id="painting-reveal"></div>
+      </div>
       <div id="continue-btn-wrap">
         <button id="continue-btn">Pokračovat →</button>
       </div>
     </div>
 
-    <!-- Ranking -->
-    <div id="ranking-screen">
-      <div class="ranking-header">
-        <h2>Nejoblíbenější obrazy</h2>
-        <p>Váš osobní žebříček</p>
+    <!-- Results -->
+    <div id="result-screen">
+      <div class="result-top">
+        <div class="score-ring">
+          <span class="score-num" id="final-score-num">0</span>
+          <span class="score-denom">/ 10</span>
+        </div>
+        <p class="result-msg" id="result-msg"></p>
+        <p class="result-highscore" id="result-highscore"></p>
       </div>
-      <div id="ranking-grid"></div>
-      <div class="btn-back-wrap">
-        <button class="btn-back" id="back-btn">← Zpět na hlasování</button>
-      </div>
+      <div id="result-list"></div>
+      <button class="btn-again" id="play-again-btn">Hrát znovu</button>
     </div>
   </div>
 </div>
 
 <script>
-// ===== PAINTINGS DATA =====
+// ===== PAINTINGS =====
 const PAINTINGS = [
   { id:'monet-sunrise',       title:'Impression, Sunrise',                  artist:'Claude Monet',               year:1872, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/claude-monet/impression-sunrise-1872.jpg' },
   { id:'monet-water-lilies',  title:'Water Lilies',                         artist:'Claude Monet',               year:1906, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/claude-monet/water-lilies-1906.jpg' },
@@ -666,286 +452,313 @@ const PAINTINGS = [
   { id:'hockney-splash',      title:'A Bigger Splash',                      artist:'David Hockney',              year:1967, style:'Pop Art',            url:'https://uploads7.wikiart.org/images/david-hockney/a-bigger-splash-1967.jpg' },
 ];
 
-// ===== STATE =====
-let roundsCompleted = 0;
-let voted = false;
-let currentPair = null;
-let eloMap  = {};
-let winsMap = {};
-let seenPairs = [];
-
-// ===== LOCALSTORAGE =====
-function loadPersistedState() {
-  try {
-    eloMap    = JSON.parse(localStorage.getItem('artduel_elo')   || '{}');
-    winsMap   = JSON.parse(localStorage.getItem('artduel_wins')  || '{}');
-    seenPairs = JSON.parse(localStorage.getItem('artduel_seen')  || '[]');
-  } catch(e) {
-    eloMap = {}; winsMap = {}; seenPairs = [];
+// ===== QUESTION TYPES =====
+var QTYPES = [
+  {
+    id: 'title',
+    question: 'Jak se tento obraz jmenuje?',
+    getVal: function(p) { return p.title; }
+  },
+  {
+    id: 'artist',
+    question: 'Kdo namaloval tento obraz?',
+    getVal: function(p) { return p.artist; }
+  },
+  {
+    id: 'year',
+    question: 'Ze kterého roku tento obraz pochází?',
+    getVal: function(p) { return String(p.year); }
+  },
+  {
+    id: 'style',
+    question: 'Jakým uměleckým stylem byl obraz namalován?',
+    getVal: function(p) { return p.style; }
   }
-  PAINTINGS.forEach(function(p) {
-    if (!(p.id in eloMap))  eloMap[p.id]  = 1500;
-    if (!(p.id in winsMap)) winsMap[p.id] = 0;
+];
+
+// Weighted type pool: title x3, artist x3, year x2, style x2
+var QTYPE_POOL = [0,0,0, 1,1,1, 2,2, 3,3];
+
+// ===== STATE =====
+var questionIndex = 0;   // 0–9
+var score = 0;
+var answered = false;
+var currentQ = null;     // { painting, qtype, correct, options }
+var history = [];        // array of result objects
+var usedIds = [];        // paintings used this session
+
+// ===== HELPERS =====
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function getUnusedPainting() {
+  var available = PAINTINGS.filter(function(p) { return usedIds.indexOf(p.id) === -1; });
+  if (available.length === 0) { usedIds = []; available = PAINTINGS.slice(); }
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function buildQuestion() {
+  var painting = getUnusedPainting();
+  usedIds.push(painting.id);
+
+  // Pick question type from weighted pool
+  var qtypeIdx = QTYPE_POOL[Math.floor(Math.random() * QTYPE_POOL.length)];
+  var qtype = QTYPES[qtypeIdx];
+  var correct = qtype.getVal(painting);
+
+  // Build 3 unique wrong options from other paintings
+  var others = shuffle(PAINTINGS.filter(function(p) { return p.id !== painting.id; }));
+  var wrongs = [];
+  for (var i = 0; i < others.length && wrongs.length < 3; i++) {
+    var v = qtype.getVal(others[i]);
+    if (v !== correct && wrongs.indexOf(v) === -1) wrongs.push(v);
+  }
+
+  var options = shuffle([correct].concat(wrongs));
+  return { painting: painting, qtype: qtype, correct: correct, options: options };
+}
+
+// ===== RENDER QUESTION =====
+function loadQuestion() {
+  answered = false;
+  currentQ = buildQuestion();
+
+  // Painting image (fade transition)
+  var img = document.getElementById('painting-img');
+  img.style.opacity = '0';
+  img.onload = function() { img.style.opacity = '1'; };
+  img.onerror = function() {
+    img.src = 'https://placehold.co/800x500/f2e4cc/9a7540?text=' + encodeURIComponent(currentQ.painting.title);
+    img.onerror = null;
+    img.style.opacity = '1';
+  };
+  img.src = currentQ.painting.url;
+
+  // Question text
+  document.getElementById('question-text').textContent = currentQ.qtype.question;
+
+  // Options
+  var grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  currentQ.options.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', function() { handleAnswer(opt); });
+    grid.appendChild(btn);
+  });
+
+  // Hide feedback & continue
+  var fb = document.getElementById('feedback-area');
+  fb.classList.remove('visible');
+  document.getElementById('continue-btn').classList.remove('visible');
+
+  // HUD
+  updateHUD();
+}
+
+function updateHUD() {
+  document.getElementById('round-badge').textContent = 'Otázka ' + (questionIndex + 1) + ' / 10';
+  document.getElementById('score-badge').textContent = 'Skóre: ' + score + ' / ' + questionIndex;
+  document.getElementById('progress-fill').style.width = (questionIndex / 10 * 100) + '%';
+}
+
+// ===== ANSWER HANDLER =====
+function handleAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+
+  var correct = currentQ.correct;
+  var isCorrect = chosen === correct;
+  if (isCorrect) score++;
+
+  history.push({
+    painting: currentQ.painting,
+    question: currentQ.qtype.question,
+    correct: correct,
+    chosen: chosen,
+    isCorrect: isCorrect
+  });
+
+  // Color the buttons
+  var btns = document.getElementById('options-grid').querySelectorAll('.opt-btn');
+  btns.forEach(function(btn) {
+    btn.disabled = true;
+    if (btn.textContent === correct) {
+      btn.classList.add('correct');
+    } else if (btn.textContent === chosen && !isCorrect) {
+      btn.classList.add('wrong');
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  // Feedback banner
+  var banner = document.getElementById('feedback-banner');
+  banner.className = 'feedback-banner ' + (isCorrect ? 'correct-banner' : 'wrong-banner');
+  document.getElementById('feedback-icon').textContent = isCorrect ? '✓' : '✗';
+  document.getElementById('feedback-text').textContent = isCorrect
+    ? 'Správně! Výborně!'
+    : 'Bohužel ne. Správná odpověď je: ' + correct;
+
+  // Painting reveal (title, artist, year, style — now safe to show)
+  var p = currentQ.painting;
+  var reveal = document.getElementById('painting-reveal');
+  reveal.innerHTML = '';
+  var t = document.createElement('div'); t.className = 'reveal-title';   t.textContent = p.title;
+  var a = document.createElement('div'); a.className = 'reveal-artist';  a.textContent = p.artist;
+  var d = document.createElement('div'); d.className = 'reveal-details'; d.textContent = p.year + '  ·  ' + p.style;
+  reveal.appendChild(t); reveal.appendChild(a); reveal.appendChild(d);
+
+  document.getElementById('feedback-area').classList.add('visible');
+
+  // Progress bar update
+  document.getElementById('progress-fill').style.width = ((questionIndex + 1) / 10 * 100) + '%';
+  document.getElementById('score-badge').textContent = 'Skóre: ' + score + ' / ' + (questionIndex + 1);
+
+  // Continue button
+  var contBtn = document.getElementById('continue-btn');
+  contBtn.textContent = (questionIndex >= 9) ? 'Zobrazit výsledky' : 'Pokračovat →';
+  contBtn.classList.add('visible');
+}
+
+function handleContinue() {
+  questionIndex++;
+  if (questionIndex >= 10) {
+    showResults();
+  } else {
+    // Scroll back to top of quiz
+    document.getElementById('quiz-screen').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(loadQuestion, 300);
+  }
+}
+
+// ===== RESULTS =====
+function showResults() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  var rs = document.getElementById('result-screen');
+  rs.classList.add('visible');
+
+  document.getElementById('final-score-num').textContent = score;
+  document.getElementById('progress-fill').style.width = '100%';
+
+  var msgs = [
+    [9, 'Jsi opravdová znalkyně umění! 🌟'],
+    [7, 'Skvělé! Umění ti není cizí! 🎨'],
+    [5, 'Dobrá práce! Příště to zvládneš! 🌸'],
+    [0, 'Nevadí — teď víš o obrázcích více! 💛']
+  ];
+  var msg = msgs[msgs.length - 1][1];
+  for (var i = 0; i < msgs.length; i++) {
+    if (score >= msgs[i][0]) { msg = msgs[i][1]; break; }
+  }
+  document.getElementById('result-msg').textContent = msg;
+
+  // High score
+  var prev = parseInt(localStorage.getItem('artquiz_highscore') || '0', 10);
+  if (score > prev) { localStorage.setItem('artquiz_highscore', score); prev = score; }
+  document.getElementById('result-highscore').textContent = 'Tvůj rekord: ' + prev + ' / 10';
+
+  // History list
+  var list = document.getElementById('result-list');
+  list.innerHTML = '';
+  history.forEach(function(h) {
+    var item = document.createElement('div');
+    item.className = 'result-item ' + (h.isCorrect ? 'ri-correct' : 'ri-wrong');
+
+    var thumb = document.createElement('img');
+    thumb.className = 'result-thumb';
+    thumb.src = h.painting.url;
+    thumb.alt = h.painting.title;
+    thumb.onerror = function() {
+      this.src = 'https://placehold.co/128x100/f2e4cc/9a7540?text=?';
+      this.onerror = null;
+    };
+
+    var icon = document.createElement('div');
+    icon.className = 'result-icon';
+    icon.textContent = h.isCorrect ? '✓' : '✗';
+    icon.style.color = h.isCorrect ? 'var(--green)' : 'var(--red)';
+
+    var text = document.createElement('div');
+    text.className = 'result-text';
+
+    var name = document.createElement('div'); name.className = 'result-painting-name'; name.textContent = h.painting.title;
+    var q    = document.createElement('div'); q.className = 'result-q';    q.textContent = h.question;
+    var ans  = document.createElement('div'); ans.className = 'result-answer';
+    if (h.isCorrect) {
+      ans.textContent = '✓ ' + h.correct;
+      ans.style.color = 'var(--green)';
+    } else {
+      ans.textContent = 'Správně: ' + h.correct;
+    }
+
+    text.appendChild(name);
+    text.appendChild(q);
+    text.appendChild(ans);
+
+    item.appendChild(thumb);
+    item.appendChild(icon);
+    item.appendChild(text);
+    list.appendChild(item);
   });
 }
 
-function savePersistedState() {
-  try {
-    localStorage.setItem('artduel_elo',  JSON.stringify(eloMap));
-    localStorage.setItem('artduel_wins', JSON.stringify(winsMap));
-    localStorage.setItem('artduel_seen', JSON.stringify(seenPairs));
-  } catch(e) { /* quota exceeded – ignore */ }
-}
+// ===== PLAY AGAIN =====
+function playAgain() {
+  questionIndex = 0;
+  score = 0;
+  answered = false;
+  history = [];
+  usedIds = [];
 
-// ===== ELO =====
-function calculateElo(winnerElo, loserElo, k) {
-  k = k || 32;
-  var expected = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
-  return {
-    winner: winnerElo + k * (1 - expected),
-    loser:  loserElo  + k * (0 - (1 - expected))
-  };
-}
-
-// ===== PAIR GENERATION =====
-function getNextPair() {
-  var n = PAINTINGS.length;
-  var seenSet = {};
-  seenPairs.forEach(function(k) { seenSet[k] = true; });
-
-  var available = [];
-  for (var i = 0; i < n; i++) {
-    for (var j = i + 1; j < n; j++) {
-      var key = [PAINTINGS[i].id, PAINTINGS[j].id].sort().join('_');
-      if (!seenSet[key]) available.push([PAINTINGS[i], PAINTINGS[j]]);
-    }
-  }
-
-  if (available.length === 0) {
-    seenPairs = [];
-    savePersistedState();
-    for (var a = 0; a < n; a++) {
-      for (var b = a + 1; b < n; b++) {
-        available.push([PAINTINGS[a], PAINTINGS[b]]);
-      }
-    }
-  }
-
-  return available[Math.floor(Math.random() * available.length)];
+  document.getElementById('result-screen').classList.remove('visible');
+  var qs = document.getElementById('quiz-screen');
+  qs.style.display = '';
+  document.getElementById('progress-fill').style.width = '0%';
+  loadQuestion();
 }
 
 // ===== PETALS =====
 function createPetals() {
   var container = document.getElementById('birthday-screen');
-  var colors = ['#f4b8c4', '#e8c4c0', '#f7d0b8', '#ddb0c8', '#f0c8b4', '#f8d4c8', '#f0b8d4'];
+  var colors = ['#f4b8c4','#e8c4c0','#f7d0b8','#ddb0c8','#f0c8b4','#f8d4c8','#f0b8d4'];
   for (var i = 0; i < 24; i++) {
     var el = document.createElement('div');
     el.className = 'petal';
     var sz = 7 + Math.random() * 14;
     el.style.cssText = [
-      'width:'              + sz + 'px',
-      'height:'             + (sz * 1.55) + 'px',
-      'left:'               + (Math.random() * 100) + '%',
+      'width:' + sz + 'px',
+      'height:' + (sz * 1.55) + 'px',
+      'left:' + (Math.random() * 100) + '%',
       'top:0',
-      'background:'         + colors[Math.floor(Math.random() * colors.length)],
+      'background:' + colors[Math.floor(Math.random() * colors.length)],
       'animation-duration:' + (5 + Math.random() * 7) + 's',
-      'animation-delay:'    + (Math.random() * 12) + 's',
-      'opacity:'            + (0.5 + Math.random() * 0.5)
+      'animation-delay:' + (Math.random() * 12) + 's',
+      'opacity:' + (0.5 + Math.random() * 0.5)
     ].join(';');
     container.appendChild(el);
   }
-}
-
-// ===== BUILD VOTING CARD =====
-function makeVoteCard(painting, idx) {
-  var card = document.createElement('div');
-  card.className = 'painting-card';
-  card.id = 'card-' + idx;
-
-  var wrap = document.createElement('div');
-  wrap.className = 'painting-img-wrap';
-
-  var img = document.createElement('img');
-  img.src = painting.url;
-  img.alt = painting.title;
-  img.onerror = function() {
-    this.src = 'https://placehold.co/600x400/f2e4cc/9a7540?text=' + encodeURIComponent(painting.title);
-    this.onerror = null;
-  };
-  wrap.appendChild(img);
-
-  var meta = document.createElement('div');
-  meta.className = 'painting-meta';
-  meta.id = 'meta-' + idx;
-
-  var t = document.createElement('div'); t.className = 'meta-title';  t.textContent = painting.title;
-  var a = document.createElement('div'); a.className = 'meta-artist'; a.textContent = painting.artist;
-  var d = document.createElement('div'); d.className = 'meta-details'; d.textContent = painting.year + ' · ' + painting.style;
-
-  meta.appendChild(t);
-  meta.appendChild(a);
-  meta.appendChild(d);
-
-  card.appendChild(wrap);
-  card.appendChild(meta);
-
-  card.addEventListener('click', function() { handleVote(idx); });
-  return card;
-}
-
-// ===== LOAD PAIR =====
-function loadNextPair() {
-  voted = false;
-  currentPair = getNextPair();
-
-  var grid = document.getElementById('paintings-grid');
-  grid.innerHTML = '';
-  grid.appendChild(makeVoteCard(currentPair[0], 0));
-  grid.appendChild(makeVoteCard(currentPair[1], 1));
-
-  var btn = document.getElementById('continue-btn');
-  btn.classList.remove('visible');
-  btn.textContent = 'Pokračovat →';
-
-  updateHUD();
-}
-
-function updateHUD() {
-  var current = Math.min(roundsCompleted + 1, 10);
-  document.getElementById('round-badge').textContent = 'Kolo ' + current + ' / 10';
-  document.getElementById('progress-fill').style.width = (roundsCompleted / 10 * 100) + '%';
-}
-
-// ===== VOTE HANDLER =====
-function handleVote(chosenIdx) {
-  if (voted) return;
-  voted = true;
-
-  var winner = currentPair[chosenIdx];
-  var loser  = currentPair[1 - chosenIdx];
-
-  var result = calculateElo(eloMap[winner.id], eloMap[loser.id]);
-  eloMap[winner.id]  = result.winner;
-  eloMap[loser.id]   = result.loser;
-  winsMap[winner.id]++;
-
-  var key = [winner.id, loser.id].sort().join('_');
-  seenPairs.push(key);
-  savePersistedState();
-
-  var winCard  = document.getElementById('card-' + chosenIdx);
-  var loseCard = document.getElementById('card-' + (1 - chosenIdx));
-
-  winCard.classList.add('voted-winner');
-  loseCard.classList.add('voted-loser');
-
-  var badge = document.createElement('div');
-  badge.className = 'winner-badge';
-  badge.textContent = '✓ Váš výběr';
-  winCard.querySelector('.painting-img-wrap').appendChild(badge);
-
-  document.getElementById('meta-0').classList.add('visible');
-  document.getElementById('meta-1').classList.add('visible');
-
-  roundsCompleted++;
-  document.getElementById('progress-fill').style.width = (roundsCompleted / 10 * 100) + '%';
-  document.getElementById('round-badge').textContent = 'Kolo ' + Math.min(roundsCompleted, 10) + ' / 10';
-
-  var continueBtn = document.getElementById('continue-btn');
-  continueBtn.textContent = (roundsCompleted >= 10) ? 'Zobrazit výsledky' : 'Pokračovat →';
-  continueBtn.classList.add('visible');
-}
-
-function handleContinue() {
-  if (roundsCompleted >= 10) {
-    showRanking();
-  } else {
-    loadNextPair();
-  }
-}
-
-// ===== RANKING =====
-function renderRanking() {
-  var sorted = PAINTINGS.slice().sort(function(a, b) {
-    return (eloMap[b.id] || 1500) - (eloMap[a.id] || 1500);
-  });
-
-  var grid = document.getElementById('ranking-grid');
-  grid.innerHTML = '';
-
-  sorted.forEach(function(p, i) {
-    var rank = i + 1;
-    var rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-n';
-    var w = winsMap[p.id] || 0;
-
-    var card = document.createElement('div');
-    card.className = 'ranking-card';
-
-    var rb = document.createElement('div');
-    rb.className = 'rank-badge ' + rankClass;
-    rb.textContent = rank;
-
-    var imgWrap = document.createElement('div');
-    imgWrap.className = 'ranking-img-wrap';
-
-    var img = document.createElement('img');
-    img.src = p.url;
-    img.alt = p.title;
-    img.onerror = function() {
-      this.src = 'https://placehold.co/600x400/f2e4cc/9a7540?text=' + encodeURIComponent(p.title);
-      this.onerror = null;
-    };
-    imgWrap.appendChild(img);
-
-    var info = document.createElement('div');
-    info.className = 'ranking-info';
-
-    var rt = document.createElement('div'); rt.className = 'ranking-title';   rt.textContent = p.title;
-    var ra = document.createElement('div'); ra.className = 'ranking-artist';  ra.textContent = p.artist;
-    var rd = document.createElement('div'); rd.className = 'ranking-details'; rd.textContent = p.year + ' · ' + p.style;
-    var rw = document.createElement('div'); rw.className = 'ranking-wins';    rw.textContent = w + ' vítězství';
-
-    info.appendChild(rt);
-    info.appendChild(ra);
-    info.appendChild(rd);
-    info.appendChild(rw);
-
-    card.appendChild(rb);
-    card.appendChild(imgWrap);
-    card.appendChild(info);
-    grid.appendChild(card);
-  });
-}
-
-// ===== SCREEN NAVIGATION =====
-function showRanking() {
-  document.getElementById('voting-screen').style.display = 'none';
-  var rs = document.getElementById('ranking-screen');
-  rs.classList.add('visible');
-  renderRanking();
-}
-
-function showVoting() {
-  document.getElementById('ranking-screen').classList.remove('visible');
-  document.getElementById('voting-screen').style.display = '';
 }
 
 // ===== START =====
 function startApp() {
   document.getElementById('birthday-screen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
-  loadPersistedState();
-  roundsCompleted = 0;
-  loadNextPair();
+  loadQuestion();
 }
 
-// ===== WIRE UP EVENTS =====
+// ===== EVENT LISTENERS =====
 document.getElementById('start-btn').addEventListener('click', startApp);
-document.getElementById('nav-results-btn').addEventListener('click', showRanking);
 document.getElementById('continue-btn').addEventListener('click', handleContinue);
-document.getElementById('back-btn').addEventListener('click', showVoting);
+document.getElementById('play-again-btn').addEventListener('click', playAgain);
 
-// Init petals
 createPetals();
 </script>
 </body>
