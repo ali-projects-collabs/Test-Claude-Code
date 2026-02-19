@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Duel – Birthday Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #faf6f0;
+      --champagne: #f2e4cc;
+      --gold: #c8a96e;
+      --gold-dark: #9a7540;
+      --rose: #e8c4c0;
+      --text: #2a1f17;
+      --text-mid: #6b4c38;
+      --text-soft: #a08070;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Jost', system-ui, sans-serif;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(34px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes petalDrift {
+      0%   { transform: translateY(-120px) rotate(0deg) translateX(0px); opacity: 0; }
+      6%   { opacity: 0.85; }
+      88%  { opacity: 0.55; }
+      100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0); opacity: 0; }
+      60%  { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== BIRTHDAY SCREEN ===== */
+    #birthday-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(150deg, #fdf9f3 0%, var(--champagne) 52%, #f5e0cc 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      overflow: hidden;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .petal {
+      position: absolute;
+      border-radius: 50% 0 50% 0;
+      pointer-events: none;
+      animation: petalDrift linear infinite;
+    }
+
+    .birthday-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem 2rem;
+      animation: riseUp 0.65s ease 0.2s both;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .birthday-emoji {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 1.8rem;
+      line-height: 1;
+    }
+
+    .pro-tebe {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text-soft);
+      letter-spacing: 0.28em;
+      text-transform: lowercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .vsechno-nejlepsi {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 9vw, 5.6rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.05;
+      margin-bottom: 0.5rem;
+    }
+
+    .narozeninam {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 3.5vw, 2.3rem);
+      font-weight: 500;
+      color: var(--text-mid);
+      letter-spacing: 0.04em;
+      margin-bottom: 2.2rem;
+    }
+
+    .birthday-separator {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      width: 180px;
+      margin: 0 auto 1.8rem;
+    }
+    .birthday-separator::before,
+    .birthday-separator::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.55;
+    }
+    .sep-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .birthday-subtitle {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-mid);
+      line-height: 1.8;
+      margin-bottom: 2.8rem;
+    }
+
+    .btn-start {
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: white;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      border: none;
+      padding: 0.95rem 3rem;
+      border-radius: 2px;
+      cursor: pointer;
+      box-shadow: 0 4px 26px rgba(200, 169, 110, 0.48);
+      transition: transform 0.22s, box-shadow 0.22s;
+    }
+    .btn-start:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 36px rgba(200, 169, 110, 0.58);
+    }
+    .btn-start:active { transform: translateY(-1px); }
+
+    /* ===== APP ===== */
+    #app {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    #app.visible { display: flex; }
+
+    /* ===== NAV ===== */
+    #main-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(250, 246, 240, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--champagne);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 1.8rem;
+    }
+
+    .nav-brand {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text);
+      letter-spacing: 0.03em;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    #round-badge {
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--text-soft);
+      letter-spacing: 0.06em;
+    }
+
+    .btn-nav-results {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--gold-dark);
+      background: none;
+      border: 1px solid var(--gold);
+      padding: 0.4rem 1.1rem;
+      border-radius: 2px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-nav-results:hover {
+      background: var(--gold);
+      color: white;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    #progress-bar {
+      height: 3px;
+      background: var(--champagne);
+    }
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--gold), var(--gold-dark));
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    #main-content { flex: 1; }
+
+    /* ===== VOTING SCREEN ===== */
+    #voting-screen {
+      padding: 2.5rem 1.5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    #voting-screen h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 2.2rem;
+    }
+
+    #paintings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ===== PAINTING CARD ===== */
+    .painting-card {
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 2px 20px rgba(42, 31, 23, 0.08);
+      transition:
+        transform 0.28s ease,
+        border-color 0.28s ease,
+        box-shadow 0.28s ease,
+        opacity 0.35s ease;
+    }
+    .painting-card:hover:not(.voted-winner):not(.voted-loser) {
+      transform: translateY(-6px) scale(1.015);
+      border-color: var(--gold);
+      box-shadow: 0 12px 40px rgba(200, 169, 110, 0.3);
+    }
+    .painting-card.voted-winner {
+      border-color: var(--gold);
+      transform: scale(1.02);
+      box-shadow: 0 12px 44px rgba(200, 169, 110, 0.5);
+      cursor: default;
+    }
+    .painting-card.voted-loser {
+      opacity: 0.4;
+      transform: scale(0.97);
+      cursor: default;
+    }
+
+    .painting-img-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 72%;
+      background: var(--champagne);
+      overflow: hidden;
+    }
+    .painting-img-wrap img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .winner-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: white;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 0.32rem 0.72rem;
+      border-radius: 2px;
+      animation: popIn 0.32s ease both;
+      z-index: 5;
+    }
+
+    /* ===== METADATA ===== */
+    .painting-meta {
+      padding: 1.1rem 1.3rem;
+      display: none;
+    }
+    .painting-meta.visible {
+      display: block;
+      animation: fadeUp 0.45s ease 0.1s both;
+    }
+    .meta-title {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 500;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .meta-artist {
+      font-family: var(--sans);
+      font-size: 0.83rem;
+      color: var(--text-mid);
+      margin-bottom: 0.12rem;
+    }
+    .meta-details {
+      font-family: var(--sans);
+      font-size: 0.77rem;
+      color: var(--text-soft);
+      font-weight: 300;
+    }
+
+    /* ===== CONTINUE BUTTON ===== */
+    #continue-btn-wrap { text-align: center; }
+
+    #continue-btn {
+      display: none;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: white;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      border: none;
+      padding: 0.9rem 2.8rem;
+      border-radius: 2px;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(200, 169, 110, 0.42);
+      transition: transform 0.22s, box-shadow 0.22s;
+    }
+    #continue-btn.visible {
+      display: inline-block;
+      animation: fadeUp 0.4s ease both;
+    }
+    #continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(200, 169, 110, 0.52);
+    }
+
+    /* ===== RANKING SCREEN ===== */
+    #ranking-screen {
+      display: none;
+      padding: 2.5rem 1.5rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    #ranking-screen.visible { display: block; }
+
+    .ranking-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .ranking-header h2 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .ranking-header p {
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--text-soft);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    #ranking-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .ranking-card {
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(42, 31, 23, 0.08);
+      position: relative;
+      transition: transform 0.22s;
+    }
+    .ranking-card:hover { transform: translateY(-4px); }
+
+    .rank-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: white;
+      z-index: 5;
+    }
+    .rank-1 { background: linear-gradient(135deg, #e8c848, #b89028); }
+    .rank-2 { background: linear-gradient(135deg, #b8c4cc, #8898a8); }
+    .rank-3 { background: linear-gradient(135deg, #d08060, #a85838); }
+    .rank-n { background: rgba(42, 31, 23, 0.52); font-size: 0.7rem; }
+
+    .ranking-img-wrap {
+      width: 100%;
+      padding-bottom: 65%;
+      position: relative;
+      overflow: hidden;
+      background: var(--champagne);
+    }
+    .ranking-img-wrap img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ranking-info {
+      padding: 1rem 1.15rem 1.2rem;
+    }
+    .ranking-title {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 500;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 0.22rem;
+      line-height: 1.3;
+    }
+    .ranking-artist {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      margin-bottom: 0.12rem;
+    }
+    .ranking-details {
+      font-family: var(--sans);
+      font-size: 0.73rem;
+      color: var(--text-soft);
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
+    .ranking-wins {
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--gold-dark);
+    }
+
+    .btn-back-wrap { text-align: center; }
+    .btn-back {
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--gold-dark);
+      background: none;
+      border: 1px solid var(--gold);
+      padding: 0.75rem 2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-back:hover {
+      background: var(--gold);
+      color: white;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      #paintings-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+      #main-nav { padding: 0.75rem 1rem; }
+      #voting-screen, #ranking-screen { padding: 1.5rem 1rem 2.5rem; }
+      .nav-brand { font-size: 1.2rem; }
+      #round-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== BIRTHDAY SCREEN ===== -->
+<div id="birthday-screen">
+  <div class="birthday-content">
+    <span class="birthday-emoji">🌸</span>
+    <p class="pro-tebe">pro tebe</p>
+    <h1 class="vsechno-nejlepsi">Všechno nejlepší</h1>
+    <p class="narozeninam">k narozeninám mamko</p>
+    <div class="birthday-separator"><div class="sep-dot"></div></div>
+    <p class="birthday-subtitle">Vybrala jsem pro tebe malou výstavu slavných obrazů… Který se ti líbí více?</p>
+    <button class="btn-start" id="start-btn">Začít prohlídku</button>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <nav id="main-nav">
+    <span class="nav-brand">Art Duel</span>
+    <div class="nav-right">
+      <span id="round-badge">Kolo 1 / 10</span>
+      <button class="btn-nav-results" id="nav-results-btn">Výsledky →</button>
+    </div>
+  </nav>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <div id="main-content">
+    <!-- Voting -->
+    <div id="voting-screen">
+      <h2>Který obraz se vám líbí více?</h2>
+      <div id="paintings-grid"></div>
+      <div id="continue-btn-wrap">
+        <button id="continue-btn">Pokračovat →</button>
+      </div>
+    </div>
+
+    <!-- Ranking -->
+    <div id="ranking-screen">
+      <div class="ranking-header">
+        <h2>Nejoblíbenější obrazy</h2>
+        <p>Váš osobní žebříček</p>
+      </div>
+      <div id="ranking-grid"></div>
+      <div class="btn-back-wrap">
+        <button class="btn-back" id="back-btn">← Zpět na hlasování</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== PAINTINGS DATA =====
+const PAINTINGS = [
+  { id:'monet-sunrise',       title:'Impression, Sunrise',                  artist:'Claude Monet',               year:1872, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/claude-monet/impression-sunrise-1872.jpg' },
+  { id:'monet-water-lilies',  title:'Water Lilies',                         artist:'Claude Monet',               year:1906, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/claude-monet/water-lilies-1906.jpg' },
+  { id:'monet-haystacks',     title:'Haystacks at Sunset',                  artist:'Claude Monet',               year:1891, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/claude-monet/haystacks-at-sunset-1891.jpg' },
+  { id:'monet-poppy',         title:'Poppy Field',                          artist:'Claude Monet',               year:1873, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/claude-monet/poppy-field-in-argenteuil-1873.jpg' },
+  { id:'renoir-boating',      title:'Luncheon of the Boating Party',        artist:'Pierre-Auguste Renoir',      year:1881, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/pierre-auguste-renoir/luncheon-of-the-boating-party-1881.jpg' },
+  { id:'renoir-moulin',       title:'Dance at Le Moulin de la Galette',     artist:'Pierre-Auguste Renoir',      year:1876, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/pierre-auguste-renoir/dance-at-le-moulin-de-la-galette-1876.jpg' },
+  { id:'renoir-sisters',      title:'Two Sisters (On the Terrace)',         artist:'Pierre-Auguste Renoir',      year:1881, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/pierre-auguste-renoir/two-sisters-on-the-terrace-1881.jpg' },
+  { id:'degas-dance-class',   title:'The Dance Class',                      artist:'Edgar Degas',                year:1874, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/edgar-degas/the-dance-class-1874.jpg' },
+  { id:'degas-blue-dancers',  title:'Blue Dancers',                         artist:'Edgar Degas',                year:1897, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/edgar-degas/blue-dancers-1897.jpg' },
+  { id:'degas-absinthe',      title:'The Absinthe Drinker',                 artist:'Edgar Degas',                year:1876, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/edgar-degas/the-absinthe-drinker-1876.jpg' },
+  { id:'pissarro-boulevard',  title:'Boulevard Montmartre',                 artist:'Camille Pissarro',           year:1897, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/camille-pissarro/boulevard-montmartre-1897.jpg' },
+  { id:'caillebotte-rainy',   title:'Paris Street; Rainy Day',              artist:'Gustave Caillebotte',        year:1877, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/gustave-caillebotte/paris-street-rainy-day-1877.jpg' },
+  { id:'morisot-cradle',      title:'The Cradle',                           artist:'Berthe Morisot',             year:1872, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/berthe-morisot/the-cradle-1872.jpg' },
+  { id:'cassatt-bath',        title:"The Child's Bath",                     artist:'Mary Cassatt',               year:1893, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/mary-cassatt/the-child-s-bath-1893.jpg' },
+  { id:'manet-bar',           title:'A Bar at the Folies-Bergère',          artist:'Édouard Manet',              year:1882, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/edouard-manet/a-bar-at-the-folies-bergere-1882.jpg' },
+  { id:'manet-olympia',       title:'Olympia',                              artist:'Édouard Manet',              year:1863, style:'Realism',            url:'https://uploads7.wikiart.org/images/edouard-manet/olympia-1863.jpg' },
+  { id:'vangogh-starry-night',title:'The Starry Night',                     artist:'Vincent van Gogh',           year:1889, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/vincent-van-gogh/the-starry-night.jpg' },
+  { id:'vangogh-sunflowers',  title:'Sunflowers',                           artist:'Vincent van Gogh',           year:1888, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/vincent-van-gogh/sunflowers-1888.jpg' },
+  { id:'vangogh-irises',      title:'Irises',                               artist:'Vincent van Gogh',           year:1889, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/vincent-van-gogh/irises-1889.jpg' },
+  { id:'vangogh-bedroom',     title:'Bedroom in Arles',                     artist:'Vincent van Gogh',           year:1888, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/vincent-van-gogh/bedroom-in-arles-1888.jpg' },
+  { id:'vangogh-cafe',        title:'The Night Café',                       artist:'Vincent van Gogh',           year:1888, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/vincent-van-gogh/the-night-cafe-1888.jpg' },
+  { id:'vangogh-self',        title:'Self-Portrait',                        artist:'Vincent van Gogh',           year:1889, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/vincent-van-gogh/self-portrait-1889.jpg' },
+  { id:'cezanne-mont',        title:'Mont Sainte-Victoire',                 artist:'Paul Cézanne',               year:1904, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/paul-cezanne/mont-sainte-victoire-1904.jpg' },
+  { id:'cezanne-card-players',title:'The Card Players',                     artist:'Paul Cézanne',               year:1895, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/paul-cezanne/the-card-players-1895.jpg' },
+  { id:'gauguin-where',       title:'Where Do We Come From?',               artist:'Paul Gauguin',               year:1897, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/paul-gauguin/where-do-we-come-from-what-are-we-where-are-we-going-1897.jpg' },
+  { id:'seurat-grande-jatte', title:'A Sunday on La Grande Jatte',          artist:'Georges Seurat',             year:1886, style:'Pointillism',        url:'https://uploads7.wikiart.org/images/georges-seurat/a-sunday-on-la-grande-jatte-1886.jpg' },
+  { id:'toulouse-moulin',     title:'At the Moulin Rouge',                  artist:'Henri de Toulouse-Lautrec',  year:1892, style:'Post-Impressionism', url:'https://uploads7.wikiart.org/images/henri-de-toulouse-lautrec/at-the-moulin-rouge-1892.jpg' },
+  { id:'klimt-kiss',          title:'The Kiss',                             artist:'Gustav Klimt',               year:1907, style:'Symbolism',          url:'https://uploads7.wikiart.org/images/gustav-klimt/the-kiss-1907-8.jpg' },
+  { id:'klimt-adele',         title:'Portrait of Adele Bloch-Bauer I',     artist:'Gustav Klimt',               year:1907, style:'Symbolism',          url:'https://uploads7.wikiart.org/images/gustav-klimt/portrait-of-adele-bloch-bauer-i-1907.jpg' },
+  { id:'klimt-judith',        title:'Judith I',                             artist:'Gustav Klimt',               year:1901, style:'Symbolism',          url:'https://uploads7.wikiart.org/images/gustav-klimt/judith-i-1901.jpg' },
+  { id:'munch-scream',        title:'The Scream',                           artist:'Edvard Munch',               year:1893, style:'Expressionism',      url:'https://uploads7.wikiart.org/images/edvard-munch/the-scream-1893.jpg' },
+  { id:'munch-madonna',       title:'Madonna',                              artist:'Edvard Munch',               year:1894, style:'Expressionism',      url:'https://uploads7.wikiart.org/images/edvard-munch/madonna-1894.jpg' },
+  { id:'mucha-gismonda',      title:'Gismonda',                             artist:'Alphonse Mucha',             year:1894, style:'Art Nouveau',        url:'https://uploads7.wikiart.org/images/alphonse-mucha/gismonda-1894.jpg' },
+  { id:'waterhouse-shalott',  title:'The Lady of Shalott',                  artist:'John William Waterhouse',    year:1888, style:'Pre-Raphaelitism',   url:'https://uploads7.wikiart.org/images/john-william-waterhouse/the-lady-of-shalott-1888.jpg' },
+  { id:'millais-ophelia',     title:'Ophelia',                              artist:'John Everett Millais',       year:1851, style:'Pre-Raphaelitism',   url:'https://uploads7.wikiart.org/images/john-everett-millais/ophelia-1851.jpg' },
+  { id:'rossetti-beata',      title:'Beata Beatrix',                        artist:'Dante Gabriel Rossetti',     year:1864, style:'Pre-Raphaelitism',   url:'https://uploads7.wikiart.org/images/dante-gabriel-rossetti/beata-beatrix-1864.jpg' },
+  { id:'leighton-june',       title:'Flaming June',                         artist:'Frederic Leighton',          year:1895, style:'Academicism',        url:'https://uploads7.wikiart.org/images/frederic-leighton/flaming-june-1895.jpg' },
+  { id:'bouguereau-venus',    title:'The Birth of Venus',                   artist:'William-Adolphe Bouguereau', year:1879, style:'Academicism',        url:'https://uploads7.wikiart.org/images/william-adolphe-bouguereau/the-birth-of-venus-1879.jpg' },
+  { id:'sargent-carnation',   title:'Carnation, Lily, Lily, Rose',          artist:'John Singer Sargent',        year:1886, style:'Impressionism',      url:'https://uploads7.wikiart.org/images/john-singer-sargent/carnation-lily-lily-rose-1886.jpg' },
+  { id:'sargent-madame-x',    title:'Madame X',                             artist:'John Singer Sargent',        year:1884, style:'Realism',            url:'https://uploads7.wikiart.org/images/john-singer-sargent/madame-x-madame-pierre-gautreau-1884.jpg' },
+  { id:'millet-gleaners',     title:'The Gleaners',                         artist:'Jean-François Millet',       year:1857, style:'Realism',            url:'https://uploads7.wikiart.org/images/jean-francois-millet/the-gleaners-1857.jpg' },
+  { id:'millet-angelus',      title:'The Angelus',                          artist:'Jean-François Millet',       year:1859, style:'Realism',            url:'https://uploads7.wikiart.org/images/jean-francois-millet/the-angelus-1859.jpg' },
+  { id:'courbet-stone',       title:'The Stone Breakers',                   artist:'Gustave Courbet',            year:1851, style:'Realism',            url:'https://uploads7.wikiart.org/images/gustave-courbet/the-stone-breakers-1851.jpg' },
+  { id:'alma-roses',          title:'The Roses of Heliogabalus',            artist:'Lawrence Alma-Tadema',       year:1888, style:'Academicism',        url:'https://uploads7.wikiart.org/images/lawrence-alma-tadema/the-roses-of-heliogabalus-1888.jpg' },
+  { id:'burne-jones-stairs',  title:'The Golden Stairs',                    artist:'Edward Burne-Jones',         year:1880, style:'Pre-Raphaelitism',   url:'https://uploads7.wikiart.org/images/edward-burne-jones/the-golden-stairs-1880.jpg' },
+  { id:'dali-memory',         title:'The Persistence of Memory',            artist:'Salvador Dalí',              year:1931, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/salvador-dali/the-persistence-of-memory-1931.jpg' },
+  { id:'dali-elephants',      title:'Swans Reflecting Elephants',           artist:'Salvador Dalí',              year:1937, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/salvador-dali/swans-reflecting-elephants-1937.jpg' },
+  { id:'magritte-son',        title:'The Son of Man',                       artist:'René Magritte',              year:1964, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/rene-magritte/the-son-of-man-1964.jpg' },
+  { id:'magritte-pipe',       title:'The Treachery of Images',              artist:'René Magritte',              year:1929, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/rene-magritte/the-treachery-of-images-this-is-not-a-pipe-1929.jpg' },
+  { id:'kahlo-two-fridas',    title:'The Two Fridas',                       artist:'Frida Kahlo',                year:1939, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/frida-kahlo/the-two-fridas-1939.jpg' },
+  { id:'kahlo-column',        title:'The Broken Column',                    artist:'Frida Kahlo',                year:1944, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/frida-kahlo/the-broken-column-1944.jpg' },
+  { id:'dechirico-muses',     title:'The Disquieting Muses',                artist:'Giorgio de Chirico',         year:1918, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/giorgio-de-chirico/the-disquieting-muses-1918.jpg' },
+  { id:'miro-carnival',       title:"The Harlequin's Carnival",             artist:'Joan Miró',                  year:1924, style:'Surrealism',         url:'https://uploads7.wikiart.org/images/joan-miro/the-harlequin-s-carnival-1924.jpg' },
+  { id:'picasso-guernica',    title:'Guernica',                             artist:'Pablo Picasso',              year:1937, style:'Cubism',             url:'https://uploads7.wikiart.org/images/pablo-picasso/guernica-1937.jpg' },
+  { id:'picasso-demoiselles', title:"Les Demoiselles d'Avignon",            artist:'Pablo Picasso',              year:1907, style:'Cubism',             url:'https://uploads7.wikiart.org/images/pablo-picasso/les-demoiselles-d-avignon-1907.jpg' },
+  { id:'matisse-dance',       title:'Dance (I)',                            artist:'Henri Matisse',              year:1909, style:'Fauvism',            url:'https://uploads7.wikiart.org/images/henri-matisse/dance-i-1909.jpg' },
+  { id:'matisse-joy',         title:'The Joy of Life',                      artist:'Henri Matisse',              year:1906, style:'Fauvism',            url:'https://uploads7.wikiart.org/images/henri-matisse/the-joy-of-life-1906.jpg' },
+  { id:'kandinsky-vii',       title:'Composition VII',                      artist:'Wassily Kandinsky',          year:1913, style:'Abstract Art',      url:'https://uploads7.wikiart.org/images/wassily-kandinsky/composition-vii-1913.jpg' },
+  { id:'modigliani-nude',     title:'Reclining Nude',                       artist:'Amedeo Modigliani',          year:1917, style:'Expressionism',      url:'https://uploads7.wikiart.org/images/amedeo-modigliani/reclining-nude-1917.jpg' },
+  { id:'hopper-nighthawks',   title:'Nighthawks',                           artist:'Edward Hopper',              year:1942, style:'Realism',            url:'https://uploads7.wikiart.org/images/edward-hopper/nighthawks-1942.jpg' },
+  { id:'warhol-marilyn',      title:'Marilyn Monroe',                       artist:'Andy Warhol',                year:1967, style:'Pop Art',            url:'https://uploads7.wikiart.org/images/andy-warhol/marilyn-monroe-marilyn-1967.jpg' },
+  { id:'hockney-splash',      title:'A Bigger Splash',                      artist:'David Hockney',              year:1967, style:'Pop Art',            url:'https://uploads7.wikiart.org/images/david-hockney/a-bigger-splash-1967.jpg' },
+];
+
+// ===== STATE =====
+let roundsCompleted = 0;
+let voted = false;
+let currentPair = null;
+let eloMap  = {};
+let winsMap = {};
+let seenPairs = [];
+
+// ===== LOCALSTORAGE =====
+function loadPersistedState() {
+  try {
+    eloMap    = JSON.parse(localStorage.getItem('artduel_elo')   || '{}');
+    winsMap   = JSON.parse(localStorage.getItem('artduel_wins')  || '{}');
+    seenPairs = JSON.parse(localStorage.getItem('artduel_seen')  || '[]');
+  } catch(e) {
+    eloMap = {}; winsMap = {}; seenPairs = [];
+  }
+  PAINTINGS.forEach(function(p) {
+    if (!(p.id in eloMap))  eloMap[p.id]  = 1500;
+    if (!(p.id in winsMap)) winsMap[p.id] = 0;
+  });
+}
+
+function savePersistedState() {
+  try {
+    localStorage.setItem('artduel_elo',  JSON.stringify(eloMap));
+    localStorage.setItem('artduel_wins', JSON.stringify(winsMap));
+    localStorage.setItem('artduel_seen', JSON.stringify(seenPairs));
+  } catch(e) { /* quota exceeded – ignore */ }
+}
+
+// ===== ELO =====
+function calculateElo(winnerElo, loserElo, k) {
+  k = k || 32;
+  var expected = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
+  return {
+    winner: winnerElo + k * (1 - expected),
+    loser:  loserElo  + k * (0 - (1 - expected))
+  };
+}
+
+// ===== PAIR GENERATION =====
+function getNextPair() {
+  var n = PAINTINGS.length;
+  var seenSet = {};
+  seenPairs.forEach(function(k) { seenSet[k] = true; });
+
+  var available = [];
+  for (var i = 0; i < n; i++) {
+    for (var j = i + 1; j < n; j++) {
+      var key = [PAINTINGS[i].id, PAINTINGS[j].id].sort().join('_');
+      if (!seenSet[key]) available.push([PAINTINGS[i], PAINTINGS[j]]);
+    }
+  }
+
+  if (available.length === 0) {
+    seenPairs = [];
+    savePersistedState();
+    for (var a = 0; a < n; a++) {
+      for (var b = a + 1; b < n; b++) {
+        available.push([PAINTINGS[a], PAINTINGS[b]]);
+      }
+    }
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+// ===== PETALS =====
+function createPetals() {
+  var container = document.getElementById('birthday-screen');
+  var colors = ['#f4b8c4', '#e8c4c0', '#f7d0b8', '#ddb0c8', '#f0c8b4', '#f8d4c8', '#f0b8d4'];
+  for (var i = 0; i < 24; i++) {
+    var el = document.createElement('div');
+    el.className = 'petal';
+    var sz = 7 + Math.random() * 14;
+    el.style.cssText = [
+      'width:'              + sz + 'px',
+      'height:'             + (sz * 1.55) + 'px',
+      'left:'               + (Math.random() * 100) + '%',
+      'top:0',
+      'background:'         + colors[Math.floor(Math.random() * colors.length)],
+      'animation-duration:' + (5 + Math.random() * 7) + 's',
+      'animation-delay:'    + (Math.random() * 12) + 's',
+      'opacity:'            + (0.5 + Math.random() * 0.5)
+    ].join(';');
+    container.appendChild(el);
+  }
+}
+
+// ===== BUILD VOTING CARD =====
+function makeVoteCard(painting, idx) {
+  var card = document.createElement('div');
+  card.className = 'painting-card';
+  card.id = 'card-' + idx;
+
+  var wrap = document.createElement('div');
+  wrap.className = 'painting-img-wrap';
+
+  var img = document.createElement('img');
+  img.src = painting.url;
+  img.alt = painting.title;
+  img.onerror = function() {
+    this.src = 'https://placehold.co/600x400/f2e4cc/9a7540?text=' + encodeURIComponent(painting.title);
+    this.onerror = null;
+  };
+  wrap.appendChild(img);
+
+  var meta = document.createElement('div');
+  meta.className = 'painting-meta';
+  meta.id = 'meta-' + idx;
+
+  var t = document.createElement('div'); t.className = 'meta-title';  t.textContent = painting.title;
+  var a = document.createElement('div'); a.className = 'meta-artist'; a.textContent = painting.artist;
+  var d = document.createElement('div'); d.className = 'meta-details'; d.textContent = painting.year + ' · ' + painting.style;
+
+  meta.appendChild(t);
+  meta.appendChild(a);
+  meta.appendChild(d);
+
+  card.appendChild(wrap);
+  card.appendChild(meta);
+
+  card.addEventListener('click', function() { handleVote(idx); });
+  return card;
+}
+
+// ===== LOAD PAIR =====
+function loadNextPair() {
+  voted = false;
+  currentPair = getNextPair();
+
+  var grid = document.getElementById('paintings-grid');
+  grid.innerHTML = '';
+  grid.appendChild(makeVoteCard(currentPair[0], 0));
+  grid.appendChild(makeVoteCard(currentPair[1], 1));
+
+  var btn = document.getElementById('continue-btn');
+  btn.classList.remove('visible');
+  btn.textContent = 'Pokračovat →';
+
+  updateHUD();
+}
+
+function updateHUD() {
+  var current = Math.min(roundsCompleted + 1, 10);
+  document.getElementById('round-badge').textContent = 'Kolo ' + current + ' / 10';
+  document.getElementById('progress-fill').style.width = (roundsCompleted / 10 * 100) + '%';
+}
+
+// ===== VOTE HANDLER =====
+function handleVote(chosenIdx) {
+  if (voted) return;
+  voted = true;
+
+  var winner = currentPair[chosenIdx];
+  var loser  = currentPair[1 - chosenIdx];
+
+  var result = calculateElo(eloMap[winner.id], eloMap[loser.id]);
+  eloMap[winner.id]  = result.winner;
+  eloMap[loser.id]   = result.loser;
+  winsMap[winner.id]++;
+
+  var key = [winner.id, loser.id].sort().join('_');
+  seenPairs.push(key);
+  savePersistedState();
+
+  var winCard  = document.getElementById('card-' + chosenIdx);
+  var loseCard = document.getElementById('card-' + (1 - chosenIdx));
+
+  winCard.classList.add('voted-winner');
+  loseCard.classList.add('voted-loser');
+
+  var badge = document.createElement('div');
+  badge.className = 'winner-badge';
+  badge.textContent = '✓ Váš výběr';
+  winCard.querySelector('.painting-img-wrap').appendChild(badge);
+
+  document.getElementById('meta-0').classList.add('visible');
+  document.getElementById('meta-1').classList.add('visible');
+
+  roundsCompleted++;
+  document.getElementById('progress-fill').style.width = (roundsCompleted / 10 * 100) + '%';
+  document.getElementById('round-badge').textContent = 'Kolo ' + Math.min(roundsCompleted, 10) + ' / 10';
+
+  var continueBtn = document.getElementById('continue-btn');
+  continueBtn.textContent = (roundsCompleted >= 10) ? 'Zobrazit výsledky' : 'Pokračovat →';
+  continueBtn.classList.add('visible');
+}
+
+function handleContinue() {
+  if (roundsCompleted >= 10) {
+    showRanking();
+  } else {
+    loadNextPair();
+  }
+}
+
+// ===== RANKING =====
+function renderRanking() {
+  var sorted = PAINTINGS.slice().sort(function(a, b) {
+    return (eloMap[b.id] || 1500) - (eloMap[a.id] || 1500);
+  });
+
+  var grid = document.getElementById('ranking-grid');
+  grid.innerHTML = '';
+
+  sorted.forEach(function(p, i) {
+    var rank = i + 1;
+    var rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-n';
+    var w = winsMap[p.id] || 0;
+
+    var card = document.createElement('div');
+    card.className = 'ranking-card';
+
+    var rb = document.createElement('div');
+    rb.className = 'rank-badge ' + rankClass;
+    rb.textContent = rank;
+
+    var imgWrap = document.createElement('div');
+    imgWrap.className = 'ranking-img-wrap';
+
+    var img = document.createElement('img');
+    img.src = p.url;
+    img.alt = p.title;
+    img.onerror = function() {
+      this.src = 'https://placehold.co/600x400/f2e4cc/9a7540?text=' + encodeURIComponent(p.title);
+      this.onerror = null;
+    };
+    imgWrap.appendChild(img);
+
+    var info = document.createElement('div');
+    info.className = 'ranking-info';
+
+    var rt = document.createElement('div'); rt.className = 'ranking-title';   rt.textContent = p.title;
+    var ra = document.createElement('div'); ra.className = 'ranking-artist';  ra.textContent = p.artist;
+    var rd = document.createElement('div'); rd.className = 'ranking-details'; rd.textContent = p.year + ' · ' + p.style;
+    var rw = document.createElement('div'); rw.className = 'ranking-wins';    rw.textContent = w + ' vítězství';
+
+    info.appendChild(rt);
+    info.appendChild(ra);
+    info.appendChild(rd);
+    info.appendChild(rw);
+
+    card.appendChild(rb);
+    card.appendChild(imgWrap);
+    card.appendChild(info);
+    grid.appendChild(card);
+  });
+}
+
+// ===== SCREEN NAVIGATION =====
+function showRanking() {
+  document.getElementById('voting-screen').style.display = 'none';
+  var rs = document.getElementById('ranking-screen');
+  rs.classList.add('visible');
+  renderRanking();
+}
+
+function showVoting() {
+  document.getElementById('ranking-screen').classList.remove('visible');
+  document.getElementById('voting-screen').style.display = '';
+}
+
+// ===== START =====
+function startApp() {
+  document.getElementById('birthday-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  loadPersistedState();
+  roundsCompleted = 0;
+  loadNextPair();
+}
+
+// ===== WIRE UP EVENTS =====
+document.getElementById('start-btn').addEventListener('click', startApp);
+document.getElementById('nav-results-btn').addEventListener('click', showRanking);
+document.getElementById('continue-btn').addEventListener('click', handleContinue);
+document.getElementById('back-btn').addEventListener('click', showVoting);
+
+// Init petals
+createPetals();
+</script>
+</body>
+</html>
