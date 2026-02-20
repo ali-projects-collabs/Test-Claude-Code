@@ -191,6 +191,15 @@
     }
     .opt-btn.dimmed { opacity: 0.35; }
 
+    /* Loading indicator */
+    #painting-loading {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1.1rem; font-style: italic;
+      color: var(--text-soft); background: var(--champagne);
+    }
+    #painting-loading.visible { display: flex; }
+
     /* Answer overlay (on top of painting) */
     #answer-overlay {
       position: absolute; inset: 0;
@@ -352,6 +361,7 @@
     <!-- Quiz -->
     <div id="quiz-screen">
       <div id="painting-wrap">
+        <div id="painting-loading">Načítám obraz…</div>
         <img id="painting-img" alt="Obraz">
         <div id="answer-overlay">
           <div id="overlay-icon"></div>
@@ -450,6 +460,66 @@ const PAINTINGS = [
   { id:'hockney-splash',      title:'A Bigger Splash',                      artist:'David Hockney',              year:1967, style:'Pop Art',            url:'https://uploads7.wikiart.org/images/david-hockney/a-bigger-splash-1967.jpg' },
 ];
 
+// ===== WIKIPEDIA TITLE OVERRIDES (disambiguation) =====
+var WIKI_TITLES = {
+  'monet-water-lilies':  'Water Lilies (Monet series)',
+  'monet-haystacks':     'Haystacks (Monet series)',
+  'monet-poppy':         'Poppies (Monet)',
+  'renoir-moulin':       'Bal du moulin de la Galette',
+  'degas-absinthe':      "L'Absinthe",
+  'manet-olympia':       'Olympia (Manet)',
+  'vangogh-sunflowers':  'Sunflowers (Van Gogh series)',
+  'vangogh-irises':      'Irises (painting)',
+  'vangogh-bedroom':     "Van Gogh's bedroom in Arles",
+  'vangogh-self':        'Self-Portrait with Bandaged Ear',
+  'cezanne-mont':        'Mont Sainte-Victoire (Cézanne series)',
+  'gauguin-where':       'Where Do We Come From? What Are We? Where Are We Going?',
+  'toulouse-moulin':     'At the Moulin Rouge',
+  'klimt-kiss':          'The Kiss (Klimt painting)',
+  'klimt-judith':        'Judith I (Klimt)',
+  'munch-madonna':       'Madonna (Munch)',
+  'waterhouse-shalott':  'The Lady of Shalott (painting)',
+  'millais-ophelia':     'Ophelia (painting)',
+  'bouguereau-venus':    'The Birth of Venus (Bouguereau)',
+  'sargent-madame-x':    'Madame X (Sargent painting)',
+  'millet-angelus':      'The Angelus (Millet)',
+  'dali-elephants':      'Swans Reflecting Elephants',
+  'kahlo-column':        'The Broken Column (painting)',
+  'picasso-guernica':    'Guernica',
+  'matisse-dance':       'Dance (Matisse)',
+  'matisse-joy':         'The Joy of Life (Matisse)',
+  'modigliani-nude':     'Nu couché (Modigliani)',
+  'warhol-marilyn':      'Shot Marilyns',
+  'hockney-splash':      'A Bigger Splash (David Hockney)',
+  'pissarro-boulevard':  'Boulevard Montmartre (Pissarro paintings)',
+  'morisot-cradle':      'The Cradle (Morisot)',
+};
+
+// ===== IMAGE CACHE & LOADING =====
+var imageCache = {};
+
+function getPaintingImageUrl(painting, callback) {
+  if (imageCache[painting.id]) { callback(imageCache[painting.id]); return; }
+
+  var title = WIKI_TITLES[painting.id] || painting.title;
+  var apiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' +
+               encodeURIComponent(title.replace(/ /g, '_'));
+
+  fetch(apiUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var src = null;
+      if (data.originalimage && data.originalimage.source) {
+        src = data.originalimage.source;
+      } else if (data.thumbnail && data.thumbnail.source) {
+        src = data.thumbnail.source.replace(/\/\d+px-/, '/800px-');
+      }
+      if (src) { imageCache[painting.id] = src; callback(src); }
+      else { callback(null); }
+    })
+    .catch(function() { callback(null); });
+}
+
 // ===== QUESTION TYPES =====
 var QTYPES = [
   {
@@ -530,57 +600,64 @@ function buildQuestion() {
 }
 
 // ===== RENDER QUESTION =====
-// Pre-test image, skip painting if broken, retry up to 20 times
 function loadQuestion(retryCount) {
   retryCount = retryCount || 0;
-  if (retryCount > 20) {
+  if (retryCount > 25) {
     document.getElementById('question-text').textContent = 'Nepodařilo se načíst obrázky. Zkuste obnovit stránku.';
+    document.getElementById('painting-loading').classList.remove('visible');
     return;
   }
 
   var q = buildQuestion();
 
-  // Show loading state while pre-testing image
+  // Show loading state
   var img = document.getElementById('painting-img');
   img.style.opacity = '0';
+  document.getElementById('painting-loading').classList.add('visible');
   document.getElementById('question-text').textContent = '';
   document.getElementById('options-grid').innerHTML = '';
-  document.getElementById('feedback-area').classList.remove('visible');
-  document.getElementById('continue-btn').classList.remove('visible');
 
-  var testImg = new Image();
-  var timer = setTimeout(function() {
-    // Timed out — treat as failure
-    testImg.onload = null;
-    testImg.onerror = null;
-    failedIds[q.painting.id] = true;
-    usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
-    loadQuestion(retryCount + 1);
-  }, 7000);
-
-  testImg.onload = function() {
-    clearTimeout(timer);
-    renderQuestion(q);
-  };
-  testImg.onerror = function() {
-    clearTimeout(timer);
-    failedIds[q.painting.id] = true;
-    usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
-    loadQuestion(retryCount + 1);
-  };
-  testImg.src = q.painting.url;
+  // Fetch image URL from Wikipedia REST API
+  getPaintingImageUrl(q.painting, function(imageUrl) {
+    if (!imageUrl) {
+      failedIds[q.painting.id] = true;
+      usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
+      loadQuestion(retryCount + 1);
+      return;
+    }
+    // Pre-test that the image actually loads
+    var testImg = new Image();
+    var timer = setTimeout(function() {
+      testImg.onload = testImg.onerror = null;
+      failedIds[q.painting.id] = true;
+      usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
+      loadQuestion(retryCount + 1);
+    }, 8000);
+    testImg.onload = function() {
+      clearTimeout(timer);
+      renderQuestion(q, imageUrl);
+    };
+    testImg.onerror = function() {
+      clearTimeout(timer);
+      failedIds[q.painting.id] = true;
+      usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
+      delete imageCache[q.painting.id];
+      loadQuestion(retryCount + 1);
+    };
+    testImg.src = imageUrl;
+  });
 }
 
-function renderQuestion(q) {
+function renderQuestion(q, imageUrl) {
   answered = false;
   currentQ = q;
 
-  // Image is already cached — display it
   var img = document.getElementById('painting-img');
   img.onload = null;
   img.onerror = null;
-  img.src = q.painting.url;
+  img.src = imageUrl;
   img.style.opacity = '1';
+  document.getElementById('painting-loading').classList.remove('visible');
 
   // Question text
   document.getElementById('question-text').textContent = q.qtype.question;
@@ -596,11 +673,12 @@ function renderQuestion(q) {
     grid.appendChild(btn);
   });
 
-  // Reset overlay
+  // Reset overlay & loading
   var overlay = document.getElementById('answer-overlay');
   overlay.classList.remove('visible');
   document.getElementById('overlay-progress').style.display = '';
   document.getElementById('overlay-results-btn').style.display = 'none';
+  document.getElementById('painting-loading').classList.remove('visible');
 
   updateHUD();
 }
