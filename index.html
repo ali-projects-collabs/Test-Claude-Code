@@ -147,6 +147,15 @@
       overflow: hidden;
       background: var(--champagne);
       position: relative;
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    #painting-wrap.correct-frame {
+      box-shadow: 0 0 0 4px var(--green);
+      border-color: var(--green);
+    }
+    #painting-wrap.wrong-frame {
+      box-shadow: 0 0 0 4px var(--red);
+      border-color: var(--red);
     }
     #painting-img {
       width: 100%; height: 100%;
@@ -670,6 +679,12 @@ function renderQuestion(q, imageUrl) {
   answered = false;
   currentQ = q;
 
+  // Reset painting frame color for new question
+  var wrap = document.getElementById('painting-wrap');
+  if (wrap) {
+    wrap.classList.remove('correct-frame', 'wrong-frame');
+  }
+
   var img = document.getElementById('painting-img');
   img.onload = null;
   img.onerror = null;
@@ -721,6 +736,12 @@ function handleAnswer(chosen) {
   if (answered || !currentQ) return;
   answered = true;
 
+  // Pokud by běželo staré automatické přeskakování, zastavíme ho
+  if (autoAdvanceTimer) {
+    clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
+  }
+
   chosen = chosen.trim();
   var correct = currentQ.correct;
   var isCorrect = chosen === correct;
@@ -733,6 +754,13 @@ function handleAnswer(chosen) {
     chosen: chosen,
     isCorrect: isCorrect
   });
+
+  // Zvýraznění rámečku okolo obrazu
+  var wrap = document.getElementById('painting-wrap');
+  if (wrap) {
+    wrap.classList.remove('correct-frame', 'wrong-frame');
+    wrap.classList.add(isCorrect ? 'correct-frame' : 'wrong-frame');
+  }
 
   // Color the buttons immediately — use both CSS classes and inline styles for reliability
   var btns = Array.from(document.getElementById('options-grid').getElementsByClassName('opt-btn'));
@@ -760,9 +788,23 @@ function handleAnswer(chosen) {
   // Show feedback bar right below buttons
   var fb = document.getElementById('answer-feedback');
   fb.className = isCorrect ? 'fb-correct' : 'fb-wrong';
-  fb.innerHTML = isCorrect
+  var p = currentQ.painting;
+
+  // Složíme text s dodatečnými informacemi – použijeme jen to, co máme k dispozici
+  var infoParts = [];
+  if (p.artist) infoParts.push(p.artist);
+  if (p.year)   infoParts.push(p.year);
+  if (p.style)  infoParts.push(p.style);
+
+  var extraInfo = '<br><small><strong>' + (p.title || '') + '</strong>';
+  if (infoParts.length) {
+    extraInfo += ' — ' + infoParts.join(' · ');
+  }
+  extraInfo += '</small>';
+
+  fb.innerHTML = (isCorrect
     ? '✓ Správně!'
-    : '✗ Špatně &nbsp;—&nbsp; správně: <strong>' + correct + '</strong>';
+    : '✗ Špatně &nbsp;—&nbsp; správně: <strong>' + correct + '</strong>') + extraInfo;
   fb.style.display = 'block';
 
   // Update HUD
@@ -771,7 +813,6 @@ function handleAnswer(chosen) {
   document.getElementById('score-badge').textContent = 'Skóre: ' + score + ' / ' + questionIndex;
 
   // Show overlay on the painting
-  var p = currentQ.painting;
   var overlay = document.getElementById('answer-overlay');
   overlay.className = 'answer-overlay ' + (isCorrect ? 'ov-correct' : 'ov-wrong');
 
@@ -779,8 +820,12 @@ function handleAnswer(chosen) {
   document.getElementById('overlay-result').textContent = isCorrect
     ? 'Správně!'
     : 'Špatně — správně je: ' + correct;
-  document.getElementById('overlay-info').textContent =
-    p.title + '\n' + p.artist + '  ·  ' + p.year + '  ·  ' + p.style;
+  // Stejná dodatečná informace také v překryvu přes obraz
+  var overlayInfo = p.title || '';
+  if (infoParts.length) {
+    overlayInfo += (overlayInfo ? ' — ' : '') + infoParts.join(' · ');
+  }
+  document.getElementById('overlay-info').textContent = overlayInfo;
 
   var resBtn = document.getElementById('overlay-results-btn');
 
