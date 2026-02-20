@@ -819,7 +819,13 @@ var ADVANCE_DELAY = 3000; // ms before auto-advancing
 
 // ===== ANSWER HANDLER =====
 function handleAnswer(chosen) {
-  if (answered || !currentQ) return;
+  // Debug: zkontroluj, jestli se funkce vůbec volá
+  console.log('handleAnswer called with:', chosen);
+  
+  if (answered || !currentQ) {
+    console.log('Early return - answered:', answered, 'currentQ:', currentQ);
+    return;
+  }
   answered = true;
 
   // Pokud by běželo staré automatické přeskakování, zastavíme ho
@@ -828,9 +834,11 @@ function handleAnswer(chosen) {
     autoAdvanceTimer = null;
   }
 
-  chosen = chosen.trim();
-  var correct = currentQ.correct;
+  chosen = String(chosen).trim();
+  var correct = String(currentQ.correct).trim();
   var isCorrect = chosen === correct;
+  console.log('Comparing:', chosen, '===', correct, '->', isCorrect);
+  
   if (isCorrect) score++;
 
   history.push({
@@ -850,21 +858,30 @@ function handleAnswer(chosen) {
 
   // Color the buttons immediately — use both CSS classes and inline styles for reliability
   var btns = Array.from(document.getElementById('options-grid').getElementsByClassName('opt-btn'));
+  console.log('Found buttons:', btns.length);
   btns.forEach(function(btn) {
     btn.onclick = null;
     btn.disabled = true;
     btn.style.cursor = 'default';
-    var t = btn.textContent.trim();
-    if (t === correct) {
+    var t = String(btn.textContent).trim();
+    var btnCorrect = String(correct).trim();
+    var btnChosen = String(chosen).trim();
+    
+    console.log('Button text:', t, 'correct:', btnCorrect, 'chosen:', btnChosen);
+    
+    if (t === btnCorrect) {
       btn.classList.add('correct');
       btn.style.background = '#eaf5ee';
       btn.style.borderColor = '#4d9970';
       btn.style.color = '#1e5c3a';
-    } else if (t === chosen) {
+      btn.style.fontWeight = '500';
+      console.log('Marked as correct');
+    } else if (t === btnChosen) {
       btn.classList.add('wrong');
       btn.style.background = '#faeaea';
       btn.style.borderColor = '#c05050';
       btn.style.color = '#7a2020';
+      console.log('Marked as wrong');
     } else {
       btn.classList.add('dimmed');
       btn.style.opacity = '0.35';
