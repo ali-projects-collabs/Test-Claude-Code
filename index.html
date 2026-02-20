@@ -486,6 +486,7 @@ var answered = false;
 var currentQ = null;     // { painting, qtype, correct, options }
 var history = [];        // array of result objects
 var usedIds = [];        // paintings used this session
+var failedIds = {};      // paintings whose images failed to load
 
 // ===== HELPERS =====
 function shuffle(arr) {
@@ -498,8 +499,14 @@ function shuffle(arr) {
 }
 
 function getUnusedPainting() {
-  var available = PAINTINGS.filter(function(p) { return usedIds.indexOf(p.id) === -1; });
-  if (available.length === 0) { usedIds = []; available = PAINTINGS.slice(); }
+  var available = PAINTINGS.filter(function(p) {
+    return usedIds.indexOf(p.id) === -1 && !failedIds[p.id];
+  });
+  if (available.length === 0) {
+    usedIds = [];
+    available = PAINTINGS.filter(function(p) { return !failedIds[p.id]; });
+    if (available.length < 4) { failedIds = {}; available = PAINTINGS.slice(); }
+  }
   return available[Math.floor(Math.random() * available.length)];
 }
 
@@ -525,28 +532,65 @@ function buildQuestion() {
 }
 
 // ===== RENDER QUESTION =====
-function loadQuestion() {
-  answered = false;
-  currentQ = buildQuestion();
+// Pre-test image, skip painting if broken, retry up to 20 times
+function loadQuestion(retryCount) {
+  retryCount = retryCount || 0;
+  if (retryCount > 20) {
+    document.getElementById('question-text').textContent = 'Nepodařilo se načíst obrázky. Zkuste obnovit stránku.';
+    return;
+  }
 
-  // Painting image (fade transition)
+  var q = buildQuestion();
+
+  // Show loading state while pre-testing image
   var img = document.getElementById('painting-img');
   img.style.opacity = '0';
-  img.onload = function() { img.style.opacity = '1'; };
-  img.onerror = function() {
-    img.src = 'https://placehold.co/800x500/f2e4cc/9a7540?text=' + encodeURIComponent(currentQ.painting.title);
-    img.onerror = null;
-    img.style.opacity = '1';
+  document.getElementById('question-text').textContent = '';
+  document.getElementById('options-grid').innerHTML = '';
+  document.getElementById('feedback-area').classList.remove('visible');
+  document.getElementById('continue-btn').classList.remove('visible');
+
+  var testImg = new Image();
+  var timer = setTimeout(function() {
+    // Timed out — treat as failure
+    testImg.onload = null;
+    testImg.onerror = null;
+    failedIds[q.painting.id] = true;
+    usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
+    loadQuestion(retryCount + 1);
+  }, 7000);
+
+  testImg.onload = function() {
+    clearTimeout(timer);
+    renderQuestion(q);
   };
-  img.src = currentQ.painting.url;
+  testImg.onerror = function() {
+    clearTimeout(timer);
+    failedIds[q.painting.id] = true;
+    usedIds = usedIds.filter(function(id) { return id !== q.painting.id; });
+    loadQuestion(retryCount + 1);
+  };
+  testImg.src = q.painting.url;
+}
+
+function renderQuestion(q) {
+  answered = false;
+  currentQ = q;
+
+  // Image is already cached — display it
+  var img = document.getElementById('painting-img');
+  img.onload = null;
+  img.onerror = null;
+  img.src = q.painting.url;
+  img.style.opacity = '1';
 
   // Question text
-  document.getElementById('question-text').textContent = currentQ.qtype.question;
+  document.getElementById('question-text').textContent = q.qtype.question;
 
   // Options
   var grid = document.getElementById('options-grid');
   grid.innerHTML = '';
-  currentQ.options.forEach(function(opt) {
+  q.options.forEach(function(opt) {
     var btn = document.createElement('button');
     btn.className = 'opt-btn';
     btn.textContent = opt;
@@ -554,12 +598,6 @@ function loadQuestion() {
     grid.appendChild(btn);
   });
 
-  // Hide feedback & continue
-  var fb = document.getElementById('feedback-area');
-  fb.classList.remove('visible');
-  document.getElementById('continue-btn').classList.remove('visible');
-
-  // HUD
   updateHUD();
 }
 
@@ -626,6 +664,11 @@ function handleAnswer(chosen) {
   var contBtn = document.getElementById('continue-btn');
   contBtn.textContent = (questionIndex >= 9) ? 'Zobrazit výsledky' : 'Pokračovat →';
   contBtn.classList.add('visible');
+
+  // Scroll continue button into view so user can see it
+  setTimeout(function() {
+    contBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 150);
 }
 
 function handleContinue() {
@@ -717,6 +760,7 @@ function playAgain() {
   answered = false;
   history = [];
   usedIds = [];
+  // Keep failedIds — no point retrying broken images
 
   document.getElementById('result-screen').classList.remove('visible');
   var qs = document.getElementById('quiz-screen');
