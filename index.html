@@ -487,6 +487,89 @@ const PAINTINGS = [
   { id:'hockney-splash',      title:'A Bigger Splash',                      artist:'David Hockney',              year:1967, style:'Pop Art',            url:'https://uploads7.wikiart.org/images/david-hockney/a-bigger-splash-1967.jpg' },
 ];
 
+// ===== CZECH TRANSLATIONS =====
+var STYLE_TRANSLATIONS = {
+  'Impressionism': 'Impresionismus',
+  'Post-Impressionism': 'Postimpresionismus',
+  'Realism': 'Realismus',
+  'Pointillism': 'Pointilismus',
+  'Symbolism': 'Symbolismus',
+  'Expressionism': 'Expresionismus',
+  'Art Nouveau': 'Secese',
+  'Pre-Raphaelitism': 'Prerafaelitismus',
+  'Academicism': 'Akademismus',
+  'Surrealism': 'Surrealismus',
+  'Cubism': 'Kubismus',
+  'Fauvism': 'Fauvismus',
+  'Abstract Art': 'Abstraktní umění',
+  'Pop Art': 'Pop art'
+};
+
+var TITLE_TRANSLATIONS = {
+  'Impression, Sunrise': 'Imprese, východ slunce',
+  'Water Lilies': 'Lekníny',
+  'Haystacks at Sunset': 'Kupky sena při západu slunce',
+  'Poppy Field': 'Makové pole',
+  'Luncheon of the Boating Party': 'Snídaně veslařů',
+  'Dance at Le Moulin de la Galette': 'Tanec v Moulin de la Galette',
+  'Two Sisters (On the Terrace)': 'Dvě sestry (Na terase)',
+  'The Dance Class': 'Taneční třída',
+  'Blue Dancers': 'Modré tanečnice',
+  'The Absinthe Drinker': 'Piják absintu',
+  'Boulevard Montmartre': 'Bulvár Montmartre',
+  'Paris Street; Rainy Day': 'Pařížská ulice; Deštivý den',
+  'The Cradle': 'Kolébka',
+  "The Child's Bath": 'Dětská koupel',
+  'A Bar at the Folies-Bergère': 'Bar ve Folies-Bergère',
+  'Olympia': 'Olympia',
+  'The Starry Night': 'Hvězdná noc',
+  'Sunflowers': 'Slunečnice',
+  'Irises': 'Kosatce',
+  'Bedroom in Arles': 'Ložnice v Arles',
+  'The Night Café': 'Noční kavárna',
+  'Self-Portrait': 'Autoportrét',
+  'Mont Sainte-Victoire': 'Hora Sainte-Victoire',
+  'The Card Players': 'Hráči karet',
+  'Where Do We Come From?': 'Odkud přicházíme?',
+  'A Sunday on La Grande Jatte': 'Neděle na La Grande Jatte',
+  'At the Moulin Rouge': 'V Moulin Rouge',
+  'The Kiss': 'Polibek',
+  'Portrait of Adele Bloch-Bauer I': 'Portrét Adele Bloch-Bauer I',
+  'Judith I': 'Judita I',
+  'The Scream': 'Výkřik',
+  'Madonna': 'Madona',
+  'Gismonda': 'Gismonda',
+  'The Lady of Shalott': 'Dáma ze Shalottu',
+  'Ophelia': 'Ofélie',
+  'Beata Beatrix': 'Beata Beatrix',
+  'Flaming June': 'Planoucí červen',
+  'The Birth of Venus': 'Zrození Venuše',
+  'Carnation, Lily, Lily, Rose': 'Karafiát, lilie, lilie, růže',
+  'Madame X': 'Madame X',
+  'The Gleaners': 'Sběračky klasů',
+  'The Angelus': 'Anděl Páně',
+  'The Stone Breakers': 'Kamenáři',
+  'The Roses of Heliogabalus': 'Růže Heliogabala',
+  'The Golden Stairs': 'Zlaté schody',
+  'The Persistence of Memory': 'Trvání paměti',
+  'Swans Reflecting Elephants': 'Labutě odrážející slony',
+  'The Son of Man': 'Syn člověka',
+  'The Treachery of Images': 'Zrada obrazů',
+  'The Two Fridas': 'Dvě Fridy',
+  'The Broken Column': 'Zlomený sloup',
+  'The Disquieting Muses': 'Nepokojné múzy',
+  "The Harlequin's Carnival": 'Arlequínův karneval',
+  'Guernica': 'Guernica',
+  "Les Demoiselles d'Avignon": 'Slečny z Avignonu',
+  'Dance (I)': 'Tanec (I)',
+  'The Joy of Life': 'Radost ze života',
+  'Composition VII': 'Kompozice VII',
+  'Reclining Nude': 'Ležící akt',
+  'Nighthawks': 'Noční sovy',
+  'Marilyn Monroe': 'Marilyn Monroe',
+  'A Bigger Splash': 'Větší šplouchnutí'
+};
+
 // ===== WIKIPEDIA TITLE OVERRIDES (disambiguation) =====
 var WIKI_TITLES = {
   'monet-water-lilies':  'Water Lilies (Monet series)',
@@ -612,18 +695,32 @@ function buildQuestion() {
   // Pick question type from weighted pool
   var qtypeIdx = QTYPE_POOL[Math.floor(Math.random() * QTYPE_POOL.length)];
   var qtype = QTYPES[qtypeIdx];
-  var correct = qtype.getVal(painting);
+  var correctRaw = qtype.getVal(painting);
+  
+  // Convert to Czech for display
+  var correct = correctRaw;
+  if (qtype.id === 'style') {
+    correct = STYLE_TRANSLATIONS[correctRaw] || correctRaw;
+  } else if (qtype.id === 'title') {
+    correct = TITLE_TRANSLATIONS[correctRaw] || correctRaw;
+  }
 
   // Build 3 unique wrong options from other paintings
   var others = shuffle(PAINTINGS.filter(function(p) { return p.id !== painting.id; }));
   var wrongs = [];
   for (var i = 0; i < others.length && wrongs.length < 3; i++) {
-    var v = qtype.getVal(others[i]);
+    var vRaw = qtype.getVal(others[i]);
+    var v = vRaw;
+    if (qtype.id === 'style') {
+      v = STYLE_TRANSLATIONS[vRaw] || vRaw;
+    } else if (qtype.id === 'title') {
+      v = TITLE_TRANSLATIONS[vRaw] || vRaw;
+    }
     if (v !== correct && wrongs.indexOf(v) === -1) wrongs.push(v);
   }
 
   var options = shuffle([correct].concat(wrongs));
-  return { painting: painting, qtype: qtype, correct: correct, options: options };
+  return { painting: painting, qtype: qtype, correct: correct, correctRaw: correctRaw, options: options };
 }
 
 // ===== RENDER QUESTION =====
@@ -702,7 +799,10 @@ function renderQuestion(q, imageUrl) {
     var btn = document.createElement('button');
     btn.className = 'opt-btn';
     btn.textContent = opt;
-    btn.onclick = function() { handleAnswer(this.textContent); };
+    // Use direct value instead of this.textContent to avoid closure issues
+    btn.onclick = (function(optionValue) {
+      return function() { handleAnswer(optionValue); };
+    })(opt);
     grid.appendChild(btn);
   });
 
@@ -794,9 +894,10 @@ function handleAnswer(chosen) {
   var infoParts = [];
   if (p.artist) infoParts.push(p.artist);
   if (p.year)   infoParts.push(p.year);
-  if (p.style)  infoParts.push(p.style);
+  if (p.style)  infoParts.push(STYLE_TRANSLATIONS[p.style] || p.style);
 
-  var extraInfo = '<br><small><strong>' + (p.title || '') + '</strong>';
+  var titleCs = TITLE_TRANSLATIONS[p.title] || p.title;
+  var extraInfo = '<br><small><strong>' + titleCs + '</strong>';
   if (infoParts.length) {
     extraInfo += ' — ' + infoParts.join(' · ');
   }
@@ -821,9 +922,14 @@ function handleAnswer(chosen) {
     ? 'Správně!'
     : 'Špatně — správně je: ' + correct;
   // Stejná dodatečná informace také v překryvu přes obraz
-  var overlayInfo = p.title || '';
-  if (infoParts.length) {
-    overlayInfo += (overlayInfo ? ' — ' : '') + infoParts.join(' · ');
+  var titleCs = TITLE_TRANSLATIONS[p.title] || p.title;
+  var overlayInfo = titleCs || '';
+  var overlayParts = [];
+  if (p.artist) overlayParts.push(p.artist);
+  if (p.year) overlayParts.push(p.year);
+  if (p.style) overlayParts.push(STYLE_TRANSLATIONS[p.style] || p.style);
+  if (overlayParts.length) {
+    overlayInfo += (overlayInfo ? ' — ' : '') + overlayParts.join(' · ');
   }
   document.getElementById('overlay-info').textContent = overlayInfo;
 
@@ -905,7 +1011,8 @@ function showResults() {
     var text = document.createElement('div');
     text.className = 'result-text';
 
-    var name = document.createElement('div'); name.className = 'result-painting-name'; name.textContent = h.painting.title;
+    var titleCs = TITLE_TRANSLATIONS[h.painting.title] || h.painting.title;
+    var name = document.createElement('div'); name.className = 'result-painting-name'; name.textContent = titleCs;
     var q    = document.createElement('div'); q.className = 'result-q';    q.textContent = h.question;
     var ans  = document.createElement('div'); ans.className = 'result-answer';
     if (h.isCorrect) {
