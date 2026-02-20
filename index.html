@@ -977,17 +977,6 @@ document.getElementById('start-btn').addEventListener('click', startApp);
 document.getElementById('overlay-results-btn').addEventListener('click', showResults);
 document.getElementById('play-again-btn').addEventListener('click', playAgain);
 
-// Answer buttons — event delegation so it works even after grid is re-rendered
-document.getElementById('options-grid').addEventListener('click', function(e) {
-  var btn = e.target;
-  if (!btn.classList.contains('opt-btn') && btn.parentElement) {
-    btn = btn.parentElement;
-  }
-  if (btn.classList.contains('opt-btn') && !btn.disabled) {
-    handleAnswer(btn.textContent);
-  }
-});
-
 createPetals();
 </script>
 </body>
