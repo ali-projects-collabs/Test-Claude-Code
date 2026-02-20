@@ -826,7 +826,17 @@ function handleAnswer(chosen) {
     console.log('Early return - answered:', answered, 'currentQ:', currentQ);
     return;
   }
+  
+  // OKAMŽITĚ nastav answered = true, aby se zabránilo vícenásobným kliknutím
   answered = true;
+  
+  // OKAMŽITĚ zakážeme všechna tlačítka, aby uživatel viděl, že kliknutí proběhlo
+  var btns = Array.from(document.getElementById('options-grid').getElementsByClassName('opt-btn'));
+  btns.forEach(function(btn) {
+    btn.disabled = true;
+    btn.style.pointerEvents = 'none';
+    btn.style.cursor = 'not-allowed';
+  });
 
   // Pokud by běželo staré automatické přeskakování, zastavíme ho
   if (autoAdvanceTimer) {
@@ -857,12 +867,11 @@ function handleAnswer(chosen) {
   }
 
   // Color the buttons immediately — use both CSS classes and inline styles for reliability
+  // (btns už máme z výše, ale znovu je načteme pro jistotu)
   var btns = Array.from(document.getElementById('options-grid').getElementsByClassName('opt-btn'));
   console.log('Found buttons:', btns.length);
   btns.forEach(function(btn) {
     btn.onclick = null;
-    btn.disabled = true;
-    btn.style.cursor = 'default';
     var t = String(btn.textContent).trim();
     var btnCorrect = String(correct).trim();
     var btnChosen = String(chosen).trim();
@@ -875,12 +884,14 @@ function handleAnswer(chosen) {
       btn.style.borderColor = '#4d9970';
       btn.style.color = '#1e5c3a';
       btn.style.fontWeight = '500';
+      btn.style.opacity = '1';
       console.log('Marked as correct');
     } else if (t === btnChosen) {
       btn.classList.add('wrong');
       btn.style.background = '#faeaea';
       btn.style.borderColor = '#c05050';
       btn.style.color = '#7a2020';
+      btn.style.opacity = '1';
       console.log('Marked as wrong');
     } else {
       btn.classList.add('dimmed');
