@@ -147,6 +147,7 @@
       overflow: hidden;
       background: var(--champagne);
       position: relative;
+      border: 6px solid transparent;
       transition: box-shadow 0.25s ease, border-color 0.25s ease;
     }
     #painting-wrap.correct-frame {
@@ -605,29 +606,14 @@ var WIKI_TITLES = {
   'morisot-cradle':      'The Cradle (Morisot)',
 };
 
-// ===== IMAGE CACHE & LOADING =====
+// ===== IMAGE SOURCE (use curated painting URLs, not random wiki photos) =====
 var imageCache = {};
 
 function getPaintingImageUrl(painting, callback) {
-  if (imageCache[painting.id]) { callback(imageCache[painting.id]); return; }
-
-  var title = WIKI_TITLES[painting.id] || painting.title;
-  var apiUrl = 'https://en.wikipedia.org/api/rest_v1/page/summary/' +
-               encodeURIComponent(title.replace(/ /g, '_'));
-
-  fetch(apiUrl)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      var src = null;
-      if (data.originalimage && data.originalimage.source) {
-        src = data.originalimage.source;
-      } else if (data.thumbnail && data.thumbnail.source) {
-        src = data.thumbnail.source.replace(/\/\d+px-/, '/800px-');
-      }
-      if (src) { imageCache[painting.id] = src; callback(src); }
-      else { callback(null); }
-    })
-    .catch(function() { callback(null); });
+  // Jednoduše použijeme náš vlastní URL na obraz z PAINTINGS
+  var src = painting.url;
+  imageCache[painting.id] = src;
+  callback(src);
 }
 
 // ===== QUESTION TYPES =====
