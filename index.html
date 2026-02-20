@@ -648,7 +648,7 @@ var questionIndex = 0;   // 0–9
 var score = 0;
 var answered = false;
 var currentQ = null;     // { painting, qtype, correct, options }
-var history = [];        // array of result objects
+var answerHistory = [];  // array of result objects (renamed from 'history' to avoid conflict with window.history)
 var usedIds = [];        // paintings used this session
 var failedIds = {};      // paintings whose images failed to load
 
@@ -851,7 +851,7 @@ function handleAnswer(chosen) {
   
   if (isCorrect) score++;
 
-  history.push({
+  answerHistory.push({
     painting: currentQ.painting,
     question: currentQ.qtype.question,
     correct: correct,
@@ -1004,7 +1004,7 @@ function showResults() {
   // History list
   var list = document.getElementById('result-list');
   list.innerHTML = '';
-  history.forEach(function(h) {
+  answerHistory.forEach(function(h) {
     var item = document.createElement('div');
     item.className = 'result-item ' + (h.isCorrect ? 'ri-correct' : 'ri-wrong');
 
@@ -1053,7 +1053,7 @@ function playAgain() {
   questionIndex = 0;
   score = 0;
   answered = false;
-  history = [];
+  answerHistory = [];
   usedIds = [];
   // Keep failedIds — no point retrying broken images
 
