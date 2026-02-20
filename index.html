@@ -191,6 +191,23 @@
     }
     .opt-btn.dimmed { opacity: 0.35; }
 
+    /* Answer feedback bar below options */
+    #answer-feedback {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.85rem 1.2rem;
+      border-radius: 4px;
+      font-family: var(--serif); font-size: 1.05rem; font-style: italic;
+      text-align: center; line-height: 1.5;
+      animation: fadeUp 0.2s ease both;
+    }
+    #answer-feedback.fb-correct {
+      background: var(--green-bg); border: 2px solid var(--green); color: #1e5c3a;
+    }
+    #answer-feedback.fb-wrong {
+      background: var(--red-bg); border: 2px solid var(--red); color: #7a2020;
+    }
+
     /* Loading indicator */
     #painting-loading {
       position: absolute; inset: 0; display: none;
@@ -341,7 +358,7 @@
     <h1 class="vsechno-nejlepsi">Všechno nejlepší</h1>
     <p class="narozeninam">k narozeninám mamko</p>
     <div class="birthday-separator"><div class="sep-dot"></div></div>
-    <p class="birthday-subtitle">Vybrala jsem pro tebe malou výstavu slavných obrazů… Poznáš je?</p>
+    <p class="birthday-subtitle">Vybral jsem pro tebe malou výstavu slavných obrazů… Poznáš je?</p>
     <button class="btn-start" id="start-btn">Začít kvíz</button>
   </div>
 </div>
@@ -374,6 +391,7 @@
       <div id="question-area">
         <p id="question-text"></p>
         <div id="options-grid"></div>
+        <div id="answer-feedback"></div>
       </div>
     </div>
 
@@ -669,8 +687,15 @@ function renderQuestion(q, imageUrl) {
     var btn = document.createElement('button');
     btn.className = 'opt-btn';
     btn.textContent = opt;
+    btn.onclick = function() { handleAnswer(this.textContent); };
     grid.appendChild(btn);
   });
+
+  // Hide feedback bar
+  var fb = document.getElementById('answer-feedback');
+  fb.className = '';
+  fb.style.display = 'none';
+  fb.innerHTML = '';
 
   // Reset overlay & loading
   var overlay = document.getElementById('answer-overlay');
@@ -709,15 +734,36 @@ function handleAnswer(chosen) {
     isCorrect: isCorrect
   });
 
-  // Color the buttons immediately
+  // Color the buttons immediately — use both CSS classes and inline styles for reliability
   var btns = Array.from(document.getElementById('options-grid').getElementsByClassName('opt-btn'));
   btns.forEach(function(btn) {
+    btn.onclick = null;
     btn.disabled = true;
+    btn.style.cursor = 'default';
     var t = btn.textContent.trim();
-    if (t === correct)       btn.classList.add('correct');
-    else if (t === chosen)   btn.classList.add('wrong');
-    else                     btn.classList.add('dimmed');
+    if (t === correct) {
+      btn.classList.add('correct');
+      btn.style.background = '#eaf5ee';
+      btn.style.borderColor = '#4d9970';
+      btn.style.color = '#1e5c3a';
+    } else if (t === chosen) {
+      btn.classList.add('wrong');
+      btn.style.background = '#faeaea';
+      btn.style.borderColor = '#c05050';
+      btn.style.color = '#7a2020';
+    } else {
+      btn.classList.add('dimmed');
+      btn.style.opacity = '0.35';
+    }
   });
+
+  // Show feedback bar right below buttons
+  var fb = document.getElementById('answer-feedback');
+  fb.className = isCorrect ? 'fb-correct' : 'fb-wrong';
+  fb.innerHTML = isCorrect
+    ? '✓ Správně!'
+    : '✗ Špatně &nbsp;—&nbsp; správně: <strong>' + correct + '</strong>';
+  fb.style.display = 'block';
 
   // Update HUD
   questionIndex++;
