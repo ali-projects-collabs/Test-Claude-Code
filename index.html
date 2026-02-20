@@ -815,7 +815,7 @@ function updateHUD() {
 }
 
 var autoAdvanceTimer = null;
-var ADVANCE_DELAY = 3000; // ms before auto-advancing
+var ADVANCE_DELAY = 10000; // ms before auto-advancing (10 seconds)
 
 // ===== ANSWER HANDLER =====
 function handleAnswer(chosen) {
@@ -904,18 +904,27 @@ function handleAnswer(chosen) {
   fb.className = isCorrect ? 'fb-correct' : 'fb-wrong';
   var p = currentQ.painting;
 
-  // Složíme text s dodatečnými informacemi – použijeme jen to, co máme k dispozici
-  var infoParts = [];
-  if (p.artist) infoParts.push(p.artist);
-  if (p.year)   infoParts.push(p.year);
-  if (p.style)  infoParts.push(STYLE_TRANSLATIONS[p.style] || p.style);
-
+  // Složíme text s rozšířenými informacemi o obraze a umělci
   var titleCs = TITLE_TRANSLATIONS[p.title] || p.title;
-  var extraInfo = '<br><small><strong>' + titleCs + '</strong>';
-  if (infoParts.length) {
-    extraInfo += ' — ' + infoParts.join(' · ');
+  var styleCs = STYLE_TRANSLATIONS[p.style] || p.style;
+  
+  var extraInfo = '<br><div style="margin-top: 0.5rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">';
+  extraInfo += '<div style="font-weight: 500; font-size: 1.05em; margin-bottom: 0.3rem;">' + titleCs + '</div>';
+  extraInfo += '<div style="font-size: 0.9em; line-height: 1.6;">';
+  extraInfo += '<strong>Umělec:</strong> ' + p.artist;
+  if (p.year) {
+    extraInfo += '<br><strong>Rok:</strong> ' + p.year;
+    // Přidáme kontext o době
+    if (p.year < 1800) extraInfo += ' (konec 18. století)';
+    else if (p.year < 1850) extraInfo += ' (první polovina 19. století)';
+    else if (p.year < 1900) extraInfo += ' (druhá polovina 19. století)';
+    else if (p.year < 1950) extraInfo += ' (první polovina 20. století)';
+    else extraInfo += ' (druhá polovina 20. století)';
   }
-  extraInfo += '</small>';
+  if (styleCs) {
+    extraInfo += '<br><strong>Styl:</strong> ' + styleCs;
+  }
+  extraInfo += '</div></div>';
 
   fb.innerHTML = (isCorrect
     ? '✓ Správně!'
@@ -935,16 +944,13 @@ function handleAnswer(chosen) {
   document.getElementById('overlay-result').textContent = isCorrect
     ? 'Správně!'
     : 'Špatně — správně je: ' + correct;
-  // Stejná dodatečná informace také v překryvu přes obraz
+  // Rozšířené informace v překryvu přes obraz
   var titleCs = TITLE_TRANSLATIONS[p.title] || p.title;
-  var overlayInfo = titleCs || '';
-  var overlayParts = [];
-  if (p.artist) overlayParts.push(p.artist);
-  if (p.year) overlayParts.push(p.year);
-  if (p.style) overlayParts.push(STYLE_TRANSLATIONS[p.style] || p.style);
-  if (overlayParts.length) {
-    overlayInfo += (overlayInfo ? ' — ' : '') + overlayParts.join(' · ');
-  }
+  var styleCs = STYLE_TRANSLATIONS[p.style] || p.style;
+  var overlayInfo = titleCs;
+  if (p.artist) overlayInfo += '\n' + p.artist;
+  if (p.year) overlayInfo += ' · ' + p.year;
+  if (styleCs) overlayInfo += '\n' + styleCs;
   document.getElementById('overlay-info').textContent = overlayInfo;
 
   var resBtn = document.getElementById('overlay-results-btn');
