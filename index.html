@@ -191,51 +191,52 @@
     }
     .opt-btn.dimmed { opacity: 0.35; }
 
-    /* Feedback */
-    #feedback-area {
-      display: none; margin: 1.2rem 1.5rem 0;
-      border-radius: 6px; overflow: hidden;
-      animation: fadeUp 0.35s ease both;
+    /* Answer overlay (on top of painting) */
+    #answer-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 1.5rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
     }
-    #feedback-area.visible { display: block; }
+    #answer-overlay.visible { opacity: 1; pointer-events: auto; }
+    #answer-overlay.ov-correct { background: rgba(40, 120, 80, 0.88); }
+    #answer-overlay.ov-wrong   { background: rgba(160, 50, 50, 0.88); }
 
-    .feedback-banner {
-      padding: 0.75rem 1.2rem;
-      display: flex; align-items: center; gap: 0.6rem;
-      font-family: var(--sans); font-size: 0.9rem; font-weight: 500;
+    #overlay-icon {
+      font-size: 3rem; line-height: 1; color: white; margin-bottom: 0.4rem;
+      animation: popIn 0.3s ease both;
     }
-    .feedback-banner.correct-banner { background: var(--green-bg); color: #1e5c3a; }
-    .feedback-banner.wrong-banner   { background: var(--red-bg);   color: #7a2020; }
-    .feedback-icon { font-size: 1.2rem; }
+    #overlay-result {
+      font-family: var(--serif); font-size: clamp(1.4rem, 4vw, 2rem);
+      font-style: italic; color: white; text-align: center;
+      margin-bottom: 0.75rem; line-height: 1.2;
+    }
+    #overlay-info {
+      font-family: var(--sans); font-size: clamp(0.78rem, 2vw, 0.9rem);
+      color: rgba(255,255,255,0.88); text-align: center; line-height: 1.5;
+    }
+    #overlay-results-btn {
+      margin-top: 1.2rem;
+      font-family: var(--sans); font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(40,120,80,0.95); background: white;
+      border: none; padding: 0.75rem 2rem; border-radius: 2px;
+      cursor: pointer; transition: transform 0.2s;
+    }
+    #overlay-results-btn:hover { transform: translateY(-2px); }
 
-    .painting-reveal {
-      padding: 1rem 1.2rem;
-      background: white; border: 1px solid var(--champagne);
-      border-top: none;
+    /* Countdown bar at bottom of overlay */
+    #overlay-progress {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 4px; background: rgba(255,255,255,0.2);
     }
-    .reveal-title {
-      font-family: var(--serif); font-size: 1.3rem; font-weight: 500;
-      font-style: italic; color: var(--text); margin-bottom: 0.3rem;
+    #overlay-progress-fill {
+      height: 100%; width: 100%; background: rgba(255,255,255,0.7);
+      transform-origin: left;
     }
-    .reveal-artist { font-family: var(--sans); font-size: 0.85rem; color: var(--text-mid); margin-bottom: 0.12rem; }
-    .reveal-details { font-family: var(--sans); font-size: 0.78rem; color: var(--text-soft); font-weight: 300; }
-
-    /* Continue button */
-    #continue-btn-wrap { text-align: center; padding: 1.2rem 1.5rem 0; }
-    #continue-btn {
-      display: none;
-      font-family: var(--sans); font-size: 0.85rem; font-weight: 400;
-      letter-spacing: 0.15em; text-transform: uppercase; color: white;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-      border: none; padding: 0.9rem 2.8rem; border-radius: 2px; cursor: pointer;
-      box-shadow: 0 4px 24px rgba(200,169,110,0.42);
-      transition: transform 0.22s, box-shadow 0.22s;
-    }
-    #continue-btn.visible {
-      display: inline-block;
-      animation: fadeUp 0.4s ease both;
-    }
-    #continue-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(200,169,110,0.52); }
+    @keyframes countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
     /* ===== RESULT SCREEN ===== */
     #result-screen { display: none; padding: 2.5rem 1.5rem 3rem; max-width: 800px; margin: 0 auto; }
@@ -352,20 +353,17 @@
     <div id="quiz-screen">
       <div id="painting-wrap">
         <img id="painting-img" alt="Obraz">
+        <div id="answer-overlay">
+          <div id="overlay-icon"></div>
+          <div id="overlay-result"></div>
+          <div id="overlay-info"></div>
+          <button id="overlay-results-btn" style="display:none">Zobrazit výsledky →</button>
+          <div id="overlay-progress"><div id="overlay-progress-fill"></div></div>
+        </div>
       </div>
       <div id="question-area">
         <p id="question-text"></p>
         <div id="options-grid"></div>
-      </div>
-      <div id="feedback-area">
-        <div class="feedback-banner" id="feedback-banner">
-          <span class="feedback-icon" id="feedback-icon"></span>
-          <span id="feedback-text"></span>
-        </div>
-        <div class="painting-reveal" id="painting-reveal"></div>
-      </div>
-      <div id="continue-btn-wrap">
-        <button id="continue-btn">Pokračovat →</button>
       </div>
     </div>
 
@@ -598,6 +596,12 @@ function renderQuestion(q) {
     grid.appendChild(btn);
   });
 
+  // Reset overlay
+  var overlay = document.getElementById('answer-overlay');
+  overlay.classList.remove('visible');
+  document.getElementById('overlay-progress').style.display = '';
+  document.getElementById('overlay-results-btn').style.display = 'none';
+
   updateHUD();
 }
 
@@ -606,6 +610,9 @@ function updateHUD() {
   document.getElementById('score-badge').textContent = 'Skóre: ' + score + ' / ' + questionIndex;
   document.getElementById('progress-fill').style.width = (questionIndex / 10 * 100) + '%';
 }
+
+var autoAdvanceTimer = null;
+var ADVANCE_DELAY = 3000; // ms before auto-advancing
 
 // ===== ANSWER HANDLER =====
 function handleAnswer(chosen) {
@@ -624,61 +631,57 @@ function handleAnswer(chosen) {
     isCorrect: isCorrect
   });
 
-  // Color the buttons
+  // Color the buttons immediately
   var btns = document.getElementById('options-grid').querySelectorAll('.opt-btn');
   btns.forEach(function(btn) {
     btn.disabled = true;
-    if (btn.textContent === correct) {
-      btn.classList.add('correct');
-    } else if (btn.textContent === chosen && !isCorrect) {
-      btn.classList.add('wrong');
-    } else {
-      btn.classList.add('dimmed');
-    }
+    if (btn.textContent === correct)            btn.classList.add('correct');
+    else if (btn.textContent === chosen)        btn.classList.add('wrong');
+    else                                        btn.classList.add('dimmed');
   });
 
-  // Feedback banner
-  var banner = document.getElementById('feedback-banner');
-  banner.className = 'feedback-banner ' + (isCorrect ? 'correct-banner' : 'wrong-banner');
-  document.getElementById('feedback-icon').textContent = isCorrect ? '✓' : '✗';
-  document.getElementById('feedback-text').textContent = isCorrect
-    ? 'Správně! Výborně!'
-    : 'Bohužel ne. Správná odpověď je: ' + correct;
-
-  // Painting reveal (title, artist, year, style — now safe to show)
-  var p = currentQ.painting;
-  var reveal = document.getElementById('painting-reveal');
-  reveal.innerHTML = '';
-  var t = document.createElement('div'); t.className = 'reveal-title';   t.textContent = p.title;
-  var a = document.createElement('div'); a.className = 'reveal-artist';  a.textContent = p.artist;
-  var d = document.createElement('div'); d.className = 'reveal-details'; d.textContent = p.year + '  ·  ' + p.style;
-  reveal.appendChild(t); reveal.appendChild(a); reveal.appendChild(d);
-
-  document.getElementById('feedback-area').classList.add('visible');
-
-  // Progress bar update
-  document.getElementById('progress-fill').style.width = ((questionIndex + 1) / 10 * 100) + '%';
-  document.getElementById('score-badge').textContent = 'Skóre: ' + score + ' / ' + (questionIndex + 1);
-
-  // Continue button
-  var contBtn = document.getElementById('continue-btn');
-  contBtn.textContent = (questionIndex >= 9) ? 'Zobrazit výsledky' : 'Pokračovat →';
-  contBtn.classList.add('visible');
-
-  // Scroll continue button into view so user can see it
-  setTimeout(function() {
-    contBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 150);
-}
-
-function handleContinue() {
+  // Update HUD
   questionIndex++;
+  document.getElementById('progress-fill').style.width = (questionIndex / 10 * 100) + '%';
+  document.getElementById('score-badge').textContent = 'Skóre: ' + score + ' / ' + questionIndex;
+
+  // Show overlay on the painting
+  var p = currentQ.painting;
+  var overlay = document.getElementById('answer-overlay');
+  overlay.className = 'answer-overlay ' + (isCorrect ? 'ov-correct' : 'ov-wrong');
+
+  document.getElementById('overlay-icon').textContent = isCorrect ? '✓' : '✗';
+  document.getElementById('overlay-result').textContent = isCorrect
+    ? 'Správně!'
+    : 'Špatně — správně je: ' + correct;
+  document.getElementById('overlay-info').textContent =
+    p.title + '\n' + p.artist + '  ·  ' + p.year + '  ·  ' + p.style;
+
+  var resBtn = document.getElementById('overlay-results-btn');
+
   if (questionIndex >= 10) {
-    showResults();
+    // Last question — show results button, no auto-advance
+    resBtn.style.display = 'block';
+    document.getElementById('overlay-progress').style.display = 'none';
+    overlay.classList.add('visible');
   } else {
-    // Scroll back to top of quiz
-    document.getElementById('quiz-screen').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(loadQuestion, 300);
+    // Auto-advance after ADVANCE_DELAY
+    resBtn.style.display = 'none';
+    var fill = document.getElementById('overlay-progress-fill');
+    fill.style.animation = 'none';
+    fill.style.transform = 'scaleX(1)';
+    overlay.classList.add('visible');
+    // Trigger countdown animation
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        fill.style.animation = 'countdown ' + (ADVANCE_DELAY / 1000) + 's linear forwards';
+      });
+    });
+    autoAdvanceTimer = setTimeout(function() {
+      overlay.classList.remove('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(loadQuestion, 300);
+    }, ADVANCE_DELAY);
   }
 }
 
@@ -755,6 +758,7 @@ function showResults() {
 
 // ===== PLAY AGAIN =====
 function playAgain() {
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
   questionIndex = 0;
   score = 0;
   answered = false;
@@ -800,7 +804,7 @@ function startApp() {
 
 // ===== EVENT LISTENERS =====
 document.getElementById('start-btn').addEventListener('click', startApp);
-document.getElementById('continue-btn').addEventListener('click', handleContinue);
+document.getElementById('overlay-results-btn').addEventListener('click', showResults);
 document.getElementById('play-again-btn').addEventListener('click', playAgain);
 
 createPetals();
